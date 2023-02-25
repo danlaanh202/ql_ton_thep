@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 const InvoiceSchema = new mongoose.Schema(
   {
     khach_hang: {
@@ -35,4 +36,5 @@ const InvoiceSchema = new mongoose.Schema(
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
   }
 );
+InvoiceSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model("Invoice", InvoiceSchema);

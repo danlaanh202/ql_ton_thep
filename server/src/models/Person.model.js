@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 const PersonSchema = new mongoose.Schema(
   {
     ten_khach_hang: {
@@ -22,4 +23,5 @@ const PersonSchema = new mongoose.Schema(
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
   }
 );
+PersonSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model("Person", PersonSchema);

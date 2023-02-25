@@ -7,12 +7,12 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 const StyledSearchContainer = styled.div`
   .input-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 0 20px;
+    width: 100%;
+    max-width: 500px;
+
+    margin: 0 auto 20px;
+    position: relative;
     input {
-      max-width: 500px;
       width: 100%;
       padding: 12px 16px;
       border: none;
@@ -26,6 +26,10 @@ const StyledSearchContainer = styled.div`
       :disabled {
         cursor: not-allowed;
       }
+    }
+    .spinner {
+      width: 20px;
+      height: 20px;
     }
   }
   .table-container {
@@ -54,6 +58,7 @@ const index = () => {
             value={personName}
             onChange={(e) => setPersonName(e.target.value)}
           />
+          <div className="spinner"></div>
         </div>
         <div className="table-container">
           <InvoiceListTable data={data} setData={setData} />

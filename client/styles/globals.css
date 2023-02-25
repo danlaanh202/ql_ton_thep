@@ -125,3 +125,22 @@ a {
   align-items: center;
   justify-content: center;
 }
+
+@keyframes spin {
+  from {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}
+.spinner {
+  animation: spin 1s linear infinite;
+  border-radius: 100%;
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  border-radius: 100%;
+  border: 2px dotted black;
+  border-left: 2px solid transparent;
+}
