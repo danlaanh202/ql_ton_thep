@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { IStock } from "@/types";
 import { easyReadMoney } from "@/utils/convert";
 import {
@@ -35,6 +36,7 @@ const StockRow = ({
     so_luong: 0,
     don_gia: 0,
     thanh_tien: 0,
+    uuid: "",
   });
 
   const handleName = (e: ChangeEvent<HTMLInputElement>) => {
@@ -62,12 +64,15 @@ const StockRow = ({
     });
   }, [stock]);
   useEffect(() => {
-    setStock((prev: IStock) => {
-      return {
-        ...prev,
-        thanh_tien: prev.so_luong * prev.don_gia,
-      };
-    });
+    if (stock.don_gia && stock.so_luong) {
+      setStock((prev: IStock) => {
+        return {
+          ...prev,
+          thanh_tien: prev.so_luong * prev.don_gia,
+          uuid: uuidv4(),
+        };
+      });
+    }
   }, [stock.don_gia, stock.so_luong]);
   return (
     <StyledStockContainer>

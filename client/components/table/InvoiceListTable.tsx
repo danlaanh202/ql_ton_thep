@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Form, Input, InputNumber, Popconfirm, Table, Typography } from "antd";
 import { IInvoiceVar, IStock } from "@/types";
 import styled from "styled-components";
@@ -7,6 +7,7 @@ import { easyReadMoney } from "@/utils/convert";
 
 import { format } from "date-fns";
 import _ from "lodash";
+import { changeInvoiceInfo } from "@/utils/callApi";
 
 interface Item extends IInvoiceVar {
   key: React.Key;
@@ -67,10 +68,10 @@ const InvoiceListTable = ({
 }) => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState("");
-  const isEditing = (record: Item) => record.key === editingKey;
+  const isEditing = (record: Item) => record._id === editingKey;
   const edit = (record: Partial<Item> & { key: React.Key }) => {
     form.setFieldsValue({ name: "", age: "", dia_chi: "", ...record });
-    setEditingKey(record.key as string);
+    setEditingKey(record._id as string);
   };
 
   const cancel = () => {
@@ -81,20 +82,27 @@ const InvoiceListTable = ({
     try {
       const row = (await form.validateFields()) as Item;
       const newData = [...data];
-      const index = newData.findIndex((item) => key === item.key);
+      const index = newData.findIndex((item) => key === item._id);
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, {
           ...item,
           ...row,
         });
+
         setData(newData);
+
         setEditingKey("");
       } else {
         newData.push(row);
         setData(newData);
         setEditingKey("");
       }
+      changeInvoiceInfo(
+        newData[index]._id,
+        newData[index].so_tien_tra,
+        newData[index].khach_hang._id
+      ).then((res) => console.log(res.data));
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
@@ -108,7 +116,7 @@ const InvoiceListTable = ({
       title: "Tên khách hàng",
       dataIndex: ["khach_hang", "ten_khach_hang"],
       width: "300px",
-      editable: true,
+      // editable: true,
     },
     isChild
       ? {}
@@ -116,7 +124,7 @@ const InvoiceListTable = ({
           title: "Số điện thoại",
           dataIndex: ["khach_hang", "so_dien_thoai"],
           width: "300px",
-          editable: true,
+          // editable: true,
         },
     isChild
       ? {}
@@ -124,7 +132,7 @@ const InvoiceListTable = ({
           title: "Địa chỉ",
           dataIndex: ["khach_hang", "dia_chi"],
           width: "500px",
-          editable: true,
+          // editable: true,
         },
     {
       title: "Tổng hoá đơn",
@@ -132,14 +140,14 @@ const InvoiceListTable = ({
       width: "300px",
       // editable: true,
       render: (_: any, record: Item) =>
-        easyReadMoney(record.tong_tien as number),
+        easyReadMoney(record?.tong_tien as number),
     },
     {
       title: "Số tiền trả",
       dataIndex: "so_tien_tra",
       width: "300px",
       editable: true,
-      render: (_: any, record: Item) => easyReadMoney(record.so_tien_tra),
+      render: (_: any, record: Item) => easyReadMoney(record?.so_tien_tra),
     },
     isChild
       ? {}
@@ -152,7 +160,9 @@ const InvoiceListTable = ({
             return editable ? (
               <span>
                 <Typography.Link
-                  onClick={() => save(record.key)}
+                  onClick={() => {
+                    save(record._id);
+                  }}
                   style={{ marginRight: 8 }}
                 >
                   Lưu lại
@@ -171,7 +181,7 @@ const InvoiceListTable = ({
                 </Typography.Link>
                 <Popconfirm
                   title="Chắc chắn xoá?"
-                  onConfirm={() => handleDelete(record.key)}
+                  onConfirm={() => handleDelete(record._id)}
                 >
                   <a style={{ color: "red", marginLeft: "8px" }}>Xoá</a>
                 </Popconfirm>
@@ -198,7 +208,7 @@ const InvoiceListTable = ({
       ...col,
       onCell: (record: Item) => ({
         record,
-        inputType: col.dataIndex === "age" ? "number" : "text",
+        inputType: col.dataIndex === "so_tien_tra" ? "number" : "text",
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -231,7 +241,7 @@ const InvoiceListTable = ({
               >
                 Danh sách hàng hoá{" "}
               </div>
-              <InvoiceItemsTable originData={record.hang_hoa as IStock[]} />
+              <InvoiceItemsTable originData={record.hang_hoa} />
               <div className="exp-item">
                 <div className="exp-item-title">Ngày mua:</div>
                 <p className="exp-item-content">
@@ -240,7 +250,10 @@ const InvoiceListTable = ({
               </div>
               <div className="exp-item">
                 <div className="exp-item-title">Ghi chú:</div>
-                <p className="exp-item-content">{record.ghi_chu}</p>
+                <p
+                  className="exp-item-content"
+                  dangerouslySetInnerHTML={{ __html: record.ghi_chu }}
+                ></p>
               </div>
             </StyledExpandableContainer>
           ),

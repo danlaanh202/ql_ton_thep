@@ -13,6 +13,7 @@ import _ from "lodash";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Spinner from "@/components/loading/Spinner";
+import { useRouter } from "next/router";
 const StyledFormContainer = styled.form`
   width: 100%;
   max-width: 1000px;
@@ -87,7 +88,7 @@ const index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPerson, setSelectedPerson] = useState<IPerson>();
   const [isLoading, setIsLoading] = useState(false);
-
+  const router = useRouter();
   const createPerson = async (data: any) => {
     return await publicRequest.post("/person/post", {
       ten_khach_hang: searchQuery,
@@ -109,26 +110,29 @@ const index = () => {
   };
 
   const onSubmitHandler = async (data: any) => {
-    console.log({
-      ...data,
-      so_tien_tra: data.so_tien_tra * 1000,
-      ngay_mua: buyDate.toISOString(),
-      hang_hoa: stocks,
-      tong_tien: totalPrice,
-      ten_khach_hang: searchQuery,
-    });
-    setIsLoading(true);
+    // console.log({
+    //   ...data,
+    //   totalPrice: totalPrice,
+    //   so_tien_tra: data.so_tien_tra * 1000,
+    //   ngay_mua: buyDate.toISOString(),
+    //   hang_hoa: stocks,
+    //   tong_tien: totalPrice,
+    //   ten_khach_hang: searchQuery,
+    // });
+    // setIsLoading(true);
     if (!isValid) {
       console.log("looix");
       setIsLoading(false);
       return;
     }
+
     try {
       if (selectedPerson?.ten_khach_hang !== searchQuery) {
         createPerson(data).then((response) =>
           createInvoice(data, response.data._id).then((res) => {
             console.log(res.data);
             setIsLoading(false);
+            router.push("/danh_sach_hoa_don");
           })
         );
       } else {
@@ -136,6 +140,7 @@ const index = () => {
         createInvoice(data, selectedPerson._id).then((res) => {
           console.log(res.data);
           setIsLoading(false);
+          router.push("/danh_sach_hoa_don");
         });
       }
     } catch (error) {
@@ -166,7 +171,9 @@ const index = () => {
       setValue("dia_chi", selectedPerson.dia_chi);
     }
   }, [selectedPerson, searchQuery]);
-
+  // useEffect(() => {
+  //   setValue("tongHoaDon", totalPrice)
+  // },[totalPrice])
   return (
     <MainLayout>
       <Head>

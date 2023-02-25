@@ -11,18 +11,6 @@ interface Item extends IPerson {
   key: React.Key;
 }
 
-const originData: Item[] = [];
-for (let i = 0; i < 100; i++) {
-  originData.push({
-    key: i,
-    _id: `abcxyz${i}`,
-    ten_khach_hang: `Edrward ${i}`,
-    so_dien_thoai: "0812732234",
-    dia_chi: `London Park no. ${i}`,
-    so_tien_no: 20000,
-    tong_tien_mua: 50000000,
-  });
-}
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   editing: boolean;
   dataIndex: string;
@@ -69,7 +57,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 
 const PersonTable = ({ data, setData }: IData<IPerson[]>) => {
   const [form] = Form.useForm();
-  // const [data, setData] = useState(originData);
+
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record: Item) => record.key === editingKey;
   const edit = (record: Partial<Item> & { key: React.Key }) => {

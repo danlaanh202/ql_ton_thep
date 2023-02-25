@@ -135,11 +135,6 @@ const FormInput = ({
   const ref = useRef();
   const [showDropdown, setShowDropdown] = useState(false);
   useOnClickOutside(ref, () => setShowDropdown(false));
-  useEffect(() => {
-    if (disabled && setValue) {
-      setValue(inputId, disabledVal);
-    }
-  }, [disabled]);
   return (
     <StyledFormInput error={error}>
       <label className="form-label" htmlFor={inputId}>
@@ -156,7 +151,12 @@ const FormInput = ({
         />
       )}
       {type === "textarea" && (
-        <TextArea rows={6} placeholder={placeholder} {...field} />
+        <TextArea
+          style={{ whiteSpace: "pre-wrap" }}
+          rows={6}
+          placeholder={placeholder}
+          {...field}
+        />
       )}
       {type === "date" && (
         <div className="date-picker-container">

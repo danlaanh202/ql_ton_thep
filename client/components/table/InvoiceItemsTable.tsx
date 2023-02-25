@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, InputNumber, Popconfirm, Table, Typography } from "antd";
 import { IStock } from "@/types";
 import { easyReadMoney } from "@/utils/convert";
@@ -7,15 +7,6 @@ interface Item extends IStock {
   key: React.Key;
 }
 
-// const originData: Item[] = [];
-// for (let i = 0; i < 3; i++) {
-//   originData.push({
-//     key: `${i}`,
-//     ten_mat_hang: "Hàng Việt Nam",
-//     so_luong: 20,
-//     don_gia: 13,
-//   });
-// }
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   editing: boolean;
   dataIndex: string;
@@ -60,18 +51,14 @@ const EditableCell: React.FC<EditableCellProps> = ({
   );
 };
 
-const InvoiceItemsTable: React.FC = ({
-  originData,
-}: {
-  originData: IStock[];
-}) => {
+const InvoiceItemsTable = ({ originData }: { originData: IStock[] }) => {
   const [form] = Form.useForm();
   const [data, setData] = useState(originData);
   const [editingKey, setEditingKey] = useState("");
-  const isEditing = (record: Item) => record.key === editingKey;
+  const isEditing = (record: Item) => record._id === editingKey;
   const edit = (record: Partial<Item> & { key: React.Key }) => {
     form.setFieldsValue({ name: "", age: "", address: "", ...record });
-    setEditingKey(record.key as string);
+    setEditingKey(record._id as string);
   };
 
   const cancel = () => {
@@ -81,9 +68,8 @@ const InvoiceItemsTable: React.FC = ({
   const save = async (key: React.Key) => {
     try {
       const row = (await form.validateFields()) as Item;
-
       const newData = [...data];
-      const index = newData.findIndex((item) => key === item.key);
+      const index = newData.findIndex((item) => key === item._id);
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, {
@@ -97,12 +83,13 @@ const InvoiceItemsTable: React.FC = ({
         setData(newData);
         setEditingKey("");
       }
+      console.log(newData[index]);
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
   };
   const handleDelete = (key: React.Key) => {
-    const newData = data.filter((item) => item.key !== key);
+    const newData = data.filter((item) => item._id !== key);
     setData(newData);
   };
   const columns = [
@@ -141,7 +128,7 @@ const InvoiceItemsTable: React.FC = ({
         return editable ? (
           <span>
             <Typography.Link
-              onClick={() => save(record.key)}
+              onClick={() => save(record._id)}
               style={{ marginRight: 8 }}
             >
               Lưu lại
@@ -160,7 +147,7 @@ const InvoiceItemsTable: React.FC = ({
             </Typography.Link>
             <Popconfirm
               title="Chắc chắn xoá?"
-              onConfirm={() => handleDelete(record.key)}
+              onConfirm={() => handleDelete(record._id)}
             >
               <a style={{ color: "red", marginLeft: "8px" }}>Xoá</a>
             </Popconfirm>
@@ -178,7 +165,10 @@ const InvoiceItemsTable: React.FC = ({
       ...col,
       onCell: (record: Item) => ({
         record,
-        inputType: col.dataIndex === "age" ? "number" : "text",
+        inputType:
+          col.dataIndex === "don_gia" || col.dataIndex === "so_luong"
+            ? "number"
+            : "text",
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -196,7 +186,7 @@ const InvoiceItemsTable: React.FC = ({
         }}
         pagination={false}
         bordered
-        dataSource={data}
+        dataSource={data as Item[]}
         columns={mergedColumns}
         rowClassName="editable-row"
         rowKey="_id"
