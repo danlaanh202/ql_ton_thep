@@ -2,6 +2,7 @@ import {
   FileAddOutlined,
   FileSearchOutlined,
   HomeOutlined,
+  ImportOutlined,
   MoneyCollectOutlined,
   SearchOutlined,
   UnorderedListOutlined,
@@ -89,92 +90,87 @@ const MainLayout = ({ children }: { children?: ReactNode }) => {
   const router = useRouter();
   const [activeId, setActiveId] = useState(0);
   useEffect(() => {
-    if (router.asPath.split("/").includes("nhap_hoa_don")) {
-      setActiveId(1);
-    } else if (router.asPath.split("/").includes("danh_sach_hoa_don")) {
-      setActiveId(2);
-    } else if (router.asPath.split("/").includes("danh_sach_khach_hang")) {
-      setActiveId(3);
-    } else if (router.asPath.split("/").includes("tim_kiem_hoa_don")) {
-      setActiveId(4);
-    } else if (router.asPath.split("/").includes("tim_kiem_khach_hang")) {
-      setActiveId(5);
-    } else if (router.asPath.split("/").includes("tra_no")) {
-      setActiveId(6);
-    }
+    sidebarList.every((item, index) => {
+      if (`/${router.asPath.split("/")[1]}` === item.href) {
+        setActiveId(index);
+        return false;
+      }
+      return true;
+    });
   }, [router]);
   return (
     <StyledMainLayout>
       <StyledAsideContainer aria-label="Side bar">
         <div className="list-container">
           <ul className="list">
-            <Link href="/">
-              <li className={`list-item ${activeId === 0 && "active"}`}>
-                <div className="icon">
-                  <HomeOutlined />
-                </div>
-                <span className="content">Trang Chủ</span>
-              </li>
-            </Link>
-            <Link href="/nhap_hoa_don">
-              <li className={`list-item ${activeId === 1 && "active"}`}>
-                <div className="icon">
-                  <FileAddOutlined />
-                </div>
-                <span className="content">Nhập hoá đơn</span>
-              </li>
-            </Link>
-            <Link href="/danh_sach_hoa_don">
-              <li className={`list-item ${activeId === 2 && "active"}`}>
-                <div className="icon">
-                  <UnorderedListOutlined />
-                </div>
-                <span className="content">Danh sách hoá đơn</span>
-              </li>
-            </Link>
-            <Link href="/danh_sach_khach_hang">
-              <li className={`list-item ${activeId === 3 && "active"}`}>
-                <div className="icon">
-                  <UnorderedListOutlined />
-                </div>
-                <span className="content">Danh sách khách hàng</span>
-              </li>
-            </Link>
-            <Link href="/tim_kiem_hoa_don">
-              <li className={`list-item ${activeId === 4 && "active"}`}>
-                <div className="icon">
-                  <FileSearchOutlined />
-                </div>
-                <span className="content">Tìm kiếm hoá đơn</span>
-              </li>
-            </Link>
-            <Link href="/tim_kiem_khach_hang">
-              <li className={`list-item ${activeId === 5 && "active"}`}>
-                <div className="icon">
-                  <SearchOutlined />
-                </div>
-                <span className="content">Tìm kiếm khách hàng</span>
-              </li>
-            </Link>
-            <Link href="/tra_no">
-              <li className={`list-item ${activeId === 6 && "active"}`}>
-                <div className="icon">
-                  <MoneyCollectOutlined />
-                </div>
-                <span className="content">Trả nợ</span>
-              </li>
-            </Link>
+            {sidebarList.map((item, index) => (
+              <Link href={item.href}>
+                <li
+                  key={item.href}
+                  className={`list-item ${activeId === index && "active"}`}
+                >
+                  <div className="icon">{item.icon}</div>
+                  <span className="content">{item.title}</span>
+                </li>
+              </Link>
+            ))}
           </ul>
         </div>
       </StyledAsideContainer>
       <StyledMainContainer>
         <StyledHeader>
-          <div className="header-content">Nhập hoá đơn</div>
+          <div className="header-content">{sidebarList[activeId].title}</div>
         </StyledHeader>
         <StyledMainContent>{children}</StyledMainContent>
       </StyledMainContainer>
     </StyledMainLayout>
   );
 };
-
+const sidebarList = [
+  {
+    title: "Trang chủ",
+    icon: <HomeOutlined />,
+    href: "/",
+  },
+  {
+    title: "Nhập hoá đơn",
+    icon: <FileAddOutlined />,
+    href: "/nhap_hoa_don",
+  },
+  {
+    title: "Danh sách hoá đơn",
+    icon: <UnorderedListOutlined />,
+    href: "/danh_sach_hoa_don?_page=1",
+  },
+  {
+    title: "Danh sách khách hàng",
+    icon: <UnorderedListOutlined />,
+    href: "/danh_sach_khach_hang?_page=1",
+  },
+  {
+    title: "Tìm kiếm hoá đơn",
+    icon: <FileSearchOutlined />,
+    href: "/tim_kiem_hoa_don",
+  },
+  {
+    title: "Tìm kiếm khách hàng",
+    icon: <SearchOutlined />,
+    href: "/tim_kiem_khach_hang",
+  },
+  {
+    title: "Trả nợ",
+    icon: <MoneyCollectOutlined />,
+    href: "/tra_no",
+  },
+  {
+    title: "Nhập hàng hoá",
+    href: "/nhap_hang_hoa?type=unset",
+    icon: <ImportOutlined />,
+  },
+  {
+    title: "Danh sách hàng hoá",
+    href: "/danh_sach_hang_hoa",
+    icon: <UnorderedListOutlined />,
+  },
+];
 export default MainLayout;

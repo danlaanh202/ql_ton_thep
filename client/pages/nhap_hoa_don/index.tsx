@@ -1,18 +1,18 @@
+import * as yup from "yup";
+import _ from "lodash";
 import FormInput from "@/components/form/FormInput";
 import MainLayout from "@/layout/MainLayout";
 import Head from "next/head";
 import styled from "styled-components";
+import Spinner from "@/components/loading/Spinner";
+import StockRow from "@/components/form/StockRow";
+import callApi, { publicRequest } from "@/utils/callApi";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import StockRow from "@/components/form/StockRow";
 import { IPerson, IStock } from "@/types";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { easyReadMoney } from "@/utils/convert";
-import { getPeopleWithSearchQuery, publicRequest } from "@/utils/callApi";
-import _ from "lodash";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Spinner from "@/components/loading/Spinner";
 import { useRouter } from "next/router";
 const StyledFormContainer = styled.form`
   width: 100%;
@@ -73,7 +73,6 @@ const index = () => {
   const {
     handleSubmit,
     control,
-    setError,
     setValue,
     formState: { errors, isValid, isSubmitting },
   } = useForm({
@@ -89,37 +88,8 @@ const index = () => {
   const [selectedPerson, setSelectedPerson] = useState<IPerson>();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const createPerson = async (data: any) => {
-    return await publicRequest.post("/person/post", {
-      ten_khach_hang: searchQuery,
-      so_dien_thoai: data.so_dien_thoai,
-      dia_chi: data.dia_chi,
-    });
-  };
-  const createInvoice = async (data: any, _id: string) => {
-    return await publicRequest.post("/invoice/post", {
-      khach_hang_id: _id,
-      so_tien_tra: data.so_tien_tra * 1000,
-      hang_hoa: stocks.filter((element) => {
-        return element.ten_mat_hang !== "";
-      }),
-      ngay_mua: buyDate.toISOString(),
-      ghi_chu: data.ghi_chu,
-      tong_tien: totalPrice,
-    });
-  };
 
   const onSubmitHandler = async (data: any) => {
-    // console.log({
-    //   ...data,
-    //   totalPrice: totalPrice,
-    //   so_tien_tra: data.so_tien_tra * 1000,
-    //   ngay_mua: buyDate.toISOString(),
-    //   hang_hoa: stocks,
-    //   tong_tien: totalPrice,
-    //   ten_khach_hang: searchQuery,
-    // });
-    // setIsLoading(true);
     if (!isValid) {
       console.log("looix");
       setIsLoading(false);
@@ -128,20 +98,30 @@ const index = () => {
 
     try {
       if (selectedPerson?.ten_khach_hang !== searchQuery) {
-        createPerson(data).then((response) =>
-          createInvoice(data, response.data._id).then((res) => {
-            console.log(res.data);
-            setIsLoading(false);
-            router.push("/danh_sach_hoa_don");
-          })
+        callApi.createPerson(data, searchQuery).then((response) =>
+          callApi
+            .createInvoice(
+              { ...data, stocks, buyDate, totalPrice },
+              response.data._id
+            )
+            .then((res) => {
+              console.log(res.data);
+              setIsLoading(false);
+              router.push("/danh_sach_hoa_don");
+            })
         );
       } else {
         console.log("đã tồn tại");
-        createInvoice(data, selectedPerson._id).then((res) => {
-          console.log(res.data);
-          setIsLoading(false);
-          router.push("/danh_sach_hoa_don");
-        });
+        callApi
+          .createInvoice(
+            { ...data, stocks, buyDate, totalPrice },
+            selectedPerson._id
+          )
+          .then((res) => {
+            console.log(res.data);
+            setIsLoading(false);
+            router.push("/danh_sach_hoa_don");
+          });
       }
     } catch (error) {
       console.log(error);
@@ -158,9 +138,9 @@ const index = () => {
   }, [stocks]);
   useEffect(() => {
     if (searchQuery !== "")
-      getPeopleWithSearchQuery(searchQuery).then((res) =>
-        setSearchPeople(res.data)
-      );
+      callApi
+        .getPeopleWithSearchQuery(searchQuery)
+        .then((res) => setSearchPeople(res.data));
     if (searchQuery !== selectedPerson?.ten_khach_hang) {
       setSelectedPerson({} as IPerson);
     }
@@ -171,9 +151,7 @@ const index = () => {
       setValue("dia_chi", selectedPerson.dia_chi);
     }
   }, [selectedPerson, searchQuery]);
-  // useEffect(() => {
-  //   setValue("tongHoaDon", totalPrice)
-  // },[totalPrice])
+
   return (
     <MainLayout>
       <Head>

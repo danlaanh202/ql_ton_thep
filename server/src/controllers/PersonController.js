@@ -1,4 +1,5 @@
 const PersonModel = require("../models/Person.model");
+const PeopleServices = require("../services/PeopleServices");
 
 class PersonController {
   async createPerson(req, res) {
@@ -33,6 +34,17 @@ class PersonController {
     try {
       const people = await PersonModel.find({});
       return res.status(200).json(people);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  }
+  async getPeopleWithPagination(req, res) {
+    try {
+      const docs = await PeopleServices.getPeopleWithPaginate(
+        req.query._page || 1,
+        req.query._limit || 10
+      );
+      return res.status(200).json(docs);
     } catch (error) {
       return res.status(500).json(error);
     }

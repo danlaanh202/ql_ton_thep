@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
+// mongoose.Schema.Types.String.checkRequired(v => v != null);
 const mongoosePaginate = require("mongoose-paginate-v2");
 const InvoiceSchema = new mongoose.Schema(
   {
     khach_hang: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Person",
-      require: true,
+      required: true,
     },
     so_tien_tra: {
       type: Number,

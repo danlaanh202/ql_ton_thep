@@ -1,11 +1,20 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { Form, Input, InputNumber, Popconfirm, Table, Typography } from "antd";
+import {
+  Form,
+  Input,
+  InputNumber,
+  PaginationProps,
+  Popconfirm,
+  Table,
+  Typography,
+} from "antd";
 import { IData, IPerson, IStock } from "@/types";
 import styled from "styled-components";
 import InvoiceItemsTable from "./InvoiceItemsTable";
 import { easyReadMoney } from "@/utils/convert";
 import InvoiceListTable from "./InvoiceListTable";
 import InvoicesChildListTable from "./InvoicesChildListTable";
+import { useRouter } from "next/router";
 
 interface Item extends IPerson {
   key: React.Key;
@@ -55,14 +64,19 @@ const EditableCell: React.FC<EditableCellProps> = ({
   );
 };
 
-const PersonTable = ({ data, setData }: IData<IPerson[]>) => {
+const PersonTable = ({ data, setData, total }: IData<IPerson[]>) => {
   const [form] = Form.useForm();
-
   const [editingKey, setEditingKey] = useState("");
-  const isEditing = (record: Item) => record.key === editingKey;
+  const router = useRouter();
+  const onChange: PaginationProps["onChange"] = (_page: number) => {
+    router.push(`/danh_sach_hoa_don?_page=${_page}`);
+  };
+
+  const isEditing = (record: Item) => record._id === editingKey;
+
   const edit = (record: Partial<Item> & { key: React.Key }) => {
     form.setFieldsValue({ name: "", age: "", dia_chi: "", ...record });
-    setEditingKey(record.key as string);
+    setEditingKey(record._id as string);
   };
   const cancel = () => {
     setEditingKey("");
@@ -73,7 +87,7 @@ const PersonTable = ({ data, setData }: IData<IPerson[]>) => {
       const row = (await form.validateFields()) as Item;
 
       const newData = [...data];
-      const index = newData.findIndex((item) => key === item.key);
+      const index = newData.findIndex((item) => key === item._id);
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, {
@@ -92,7 +106,7 @@ const PersonTable = ({ data, setData }: IData<IPerson[]>) => {
     }
   };
   const handleDelete = (key: React.Key) => {
-    const newData = data.filter((item) => item.key !== key);
+    const newData = data.filter((item) => item._id !== key);
     setData(newData);
   };
   const columns = [
@@ -146,7 +160,7 @@ const PersonTable = ({ data, setData }: IData<IPerson[]>) => {
         return editable ? (
           <span>
             <Typography.Link
-              onClick={() => save(record.key)}
+              onClick={() => save(record._id)}
               style={{ marginRight: 8 }}
             >
               Lưu lại
@@ -165,7 +179,7 @@ const PersonTable = ({ data, setData }: IData<IPerson[]>) => {
             </Typography.Link>
             <Popconfirm
               title="Chắc chắn xoá?"
-              onConfirm={() => handleDelete(record.key)}
+              onConfirm={() => handleDelete(record._id)}
             >
               <a style={{ color: "red", marginLeft: "8px" }}>Xoá</a>
             </Popconfirm>
@@ -204,7 +218,9 @@ const PersonTable = ({ data, setData }: IData<IPerson[]>) => {
         columns={mergedColumns}
         rowClassName="editable-row"
         pagination={{
-          onChange: cancel,
+          onChange: onChange,
+          total: total,
+          current: router.query._page,
         }}
         rowKey="_id"
         expandable={{
@@ -213,7 +229,6 @@ const PersonTable = ({ data, setData }: IData<IPerson[]>) => {
               <InvoicesChildListTable id={record._id} />
             </StyledExpandableContainer>
           ),
-          rowExpandable: (record) => record.name !== "Not Expandable",
         }}
       />
     </Form>

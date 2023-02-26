@@ -1,5 +1,13 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Form, Input, InputNumber, Popconfirm, Table, Typography } from "antd";
+import {
+  Form,
+  Input,
+  InputNumber,
+  PaginationProps,
+  Popconfirm,
+  Table,
+  Typography,
+} from "antd";
 import { IInvoiceVar, IStock } from "@/types";
 import styled from "styled-components";
 import InvoiceItemsTable from "./InvoiceItemsTable";
@@ -7,7 +15,8 @@ import { easyReadMoney } from "@/utils/convert";
 
 import { format } from "date-fns";
 import _ from "lodash";
-import { changeInvoiceInfo } from "@/utils/callApi";
+import callApi from "@/utils/callApi";
+import { useRouter } from "next/router";
 
 interface Item extends IInvoiceVar {
   key: React.Key;
@@ -61,10 +70,12 @@ const InvoiceListTable = ({
   data,
   setData,
   isChild = false,
+  total,
 }: {
   data: IInvoiceVar[];
   setData: Dispatch<SetStateAction<IInvoiceVar[]>>;
   isChild?: boolean;
+  total?: number;
 }) => {
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState("");
@@ -73,7 +84,10 @@ const InvoiceListTable = ({
     form.setFieldsValue({ name: "", age: "", dia_chi: "", ...record });
     setEditingKey(record._id as string);
   };
-
+  const router = useRouter();
+  const onChange: PaginationProps["onChange"] = (_page) => {
+    router.push(`/danh_sach_hoa_don?_page=${_page}`);
+  };
   const cancel = () => {
     setEditingKey("");
   };
@@ -98,11 +112,13 @@ const InvoiceListTable = ({
         setData(newData);
         setEditingKey("");
       }
-      changeInvoiceInfo(
-        newData[index]._id,
-        newData[index].so_tien_tra,
-        newData[index].khach_hang._id
-      ).then((res) => console.log(res.data));
+      callApi
+        .changeInvoiceInfo(
+          newData[index]._id,
+          newData[index].so_tien_tra,
+          newData[index].khach_hang._id
+        )
+        .then((res) => console.log(res.data));
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
@@ -229,7 +245,9 @@ const InvoiceListTable = ({
         columns={mergedColumns}
         rowClassName="editable-row"
         pagination={{
-          onChange: cancel,
+          onChange: onChange,
+          current: parseInt(router.query._page as string) || 1,
+          total: total,
         }}
         rowKey="_id"
         expandable={{
@@ -241,7 +259,7 @@ const InvoiceListTable = ({
               >
                 Danh sách hàng hoá{" "}
               </div>
-              <InvoiceItemsTable originData={record.hang_hoa} />
+              <InvoiceItemsTable originData={record.hang_hoa as IStock[]} />
               <div className="exp-item">
                 <div className="exp-item-title">Ngày mua:</div>
                 <p className="exp-item-content">

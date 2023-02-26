@@ -2,17 +2,16 @@ import PersonTable from "@/components/table/PersonTable";
 import useDebounce from "@/hooks/useDebounce";
 import MainLayout from "@/layout/MainLayout";
 import { IPerson } from "@/types";
-import { getPeopleWithSearchQuery } from "@/utils/callApi";
+import callApi from "@/utils/callApi";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 const StyledSearchContainer = styled.div`
   .input-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 0 20px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 20px;
+    position: relative;
     input {
-      max-width: 500px;
       width: 100%;
       padding: 12px 16px;
       border: none;
@@ -27,6 +26,10 @@ const StyledSearchContainer = styled.div`
         cursor: not-allowed;
       }
     }
+    .spinner {
+      width: 20px;
+      height: 20px;
+    }
   }
   .table-container {
   }
@@ -35,11 +38,18 @@ const index = () => {
   const [personName, setPersonName] = useState("");
   const personNameDebounce = useDebounce(personName, 500);
   const [data, setData] = useState<IPerson[]>([]);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (personNameDebounce !== "") {
-      getPeopleWithSearchQuery(personNameDebounce).then((res) =>
-        setData(res.data)
-      );
+      callApi
+        .getPeopleWithSearchQuery(personNameDebounce)
+        .then((res) => {
+          setData(res.data);
+          setLoading(false);
+        })
+        .catch((err) => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, [personNameDebounce]);
   return (
@@ -51,8 +61,12 @@ const index = () => {
             type="text"
             placeholder="Nhập vào tên khách hàng"
             value={personName}
-            onChange={(e) => setPersonName(e.target.value)}
+            onChange={(e) => {
+              setLoading(true);
+              setPersonName(e.target.value);
+            }}
           />
+          {loading && <div className="spinner"></div>}
         </div>
         <div className="table-container">
           <PersonTable data={data} setData={setData} />

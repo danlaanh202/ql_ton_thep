@@ -8,5 +8,7 @@ router.post("/post", PersonController.createPerson);
 router.get("/get_people", PersonController.getPeopleWithSearchQuery);
 // [GET] get all people, when finish we will create limit and skip
 router.get("/get", PersonController.getPeople);
+//[GET] get people with paginate params:{_page, _limit}
+router.get("/get_with_paginate", PersonController.getPeopleWithPagination);
 
 module.exports = router;

@@ -4,7 +4,7 @@ const PersonSchema = new mongoose.Schema(
   {
     ten_khach_hang: {
       type: String,
-      require: true,
+      required: true,
     },
     so_dien_thoai: {
       type: String,

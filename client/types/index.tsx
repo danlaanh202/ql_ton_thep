@@ -32,4 +32,12 @@ export interface IInvoiceVar extends IId, ITimeStamps {
 export interface IData<T> {
   data: T;
   setData: Dispatch<SetStateAction<T>>;
+  total?: number;
+}
+export interface IWare extends IId, ITimeStamps {
+  ten_hang_hoa: string;
+  gia_ban: number;
+  gia_nhap: number;
+  so_luong_da_ban: number;
+  so_luong_trong_kho: number;
 }

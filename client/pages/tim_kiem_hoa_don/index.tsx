@@ -2,14 +2,13 @@ import InvoiceListTable from "@/components/table/InvoiceListTable";
 import useDebounce from "@/hooks/useDebounce";
 import MainLayout from "@/layout/MainLayout";
 import { IInvoiceVar, IPerson } from "@/types";
-import { getInvoicesWithQuery } from "@/utils/callApi";
+import callApi from "@/utils/callApi";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 const StyledSearchContainer = styled.div`
   .input-container {
     width: 100%;
     max-width: 500px;
-
     margin: 0 auto 20px;
     position: relative;
     input {
@@ -39,12 +38,19 @@ const index = () => {
   const [personName, setPersonName] = useState("");
   const personNameDebounce = useDebounce(personName, 500);
   const [data, setData] = useState<IInvoiceVar[]>([]);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (personNameDebounce !== "") {
-      getInvoicesWithQuery(personNameDebounce).then((res) => {
-        console.log(res.data);
-        setData(res.data);
-      });
+      callApi
+        .getInvoicesWithQuery(personNameDebounce)
+        .then((res) => {
+          console.log(res.data);
+          setData(res.data);
+          setLoading(false);
+        })
+        .catch((err) => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, [personNameDebounce]);
   return (
@@ -56,9 +62,12 @@ const index = () => {
             type="text"
             placeholder="Nhập vào tên khách hàng"
             value={personName}
-            onChange={(e) => setPersonName(e.target.value)}
+            onChange={(e) => {
+              setPersonName(e.target.value);
+              setLoading(true);
+            }}
           />
-          <div className="spinner"></div>
+          {loading && <div className="spinner"></div>}
         </div>
         <div className="table-container">
           <InvoiceListTable data={data} setData={setData} />
