@@ -109,7 +109,7 @@ a {
     color-scheme: dark;
   }
 } */
-@keyframes spin {
+@keyframes spin1 {
   from {
     transform: rotate(0deg);
   }
@@ -118,7 +118,7 @@ a {
   }
 }
 .animate-spin {
-  animation: spin 1s linear infinite;
+  animation: spin1 1s linear infinite;
 }
 .ant-pagination-item {
   display: flex !important;

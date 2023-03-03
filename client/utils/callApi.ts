@@ -1,4 +1,5 @@
-import { IStock } from "@/types";
+import { IStockState } from "@/components/ware/UpdateWareAmount";
+import { IStock, IWare } from "@/types";
 import axios from "axios";
 
 export const publicRequest = axios.create({
@@ -80,14 +81,21 @@ export default new (class CallApi {
     });
   }
   // ================================== Ware ===================================
-  async createWare(_data: any) {
+  async createWare(_data: IWare) {
     return await publicRequest.post("/ware/create", _data);
   }
-  async searchWare(searchQuery: string) {
+  async searchWare(searchQuery: string, _page: number, _limit = 10) {
     return await publicRequest.get("/ware/search", {
       params: {
-        searchQuery: searchQuery,
+        searchQuery,
+        _page,
+        _limit,
       },
+    });
+  }
+  async changeWaresAmount(_data: IStockState[]) {
+    return await publicRequest.put("/ware/update_amount", {
+      updateWares: _data,
     });
   }
 })();

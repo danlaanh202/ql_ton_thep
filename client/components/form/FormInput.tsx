@@ -79,7 +79,7 @@ const StyledFormInput = styled.div<IProps>`
     display: flex;
     position: relative;
     .form-input {
-      width: 100%;
+      flex: 1;
     }
     .dropdown-container {
       position: absolute;

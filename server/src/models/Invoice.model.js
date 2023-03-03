@@ -25,10 +25,9 @@ const InvoiceSchema = new mongoose.Schema(
     hang_hoa: {
       type: [
         {
-          ten_mat_hang: { type: String, required: true },
+          hang_hoa: { type: mongoose.Schema.Types.ObjectId, ref: "Ware" },
           don_gia: { type: Number, required: true },
           so_luong: { type: Number, required: true },
-          uuid: { type: String },
         },
       ],
     },

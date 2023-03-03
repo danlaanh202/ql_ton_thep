@@ -1,6 +1,6 @@
 import useDebounce from "@/hooks/useDebounce";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
-import { IWare } from "@/types";
+import { IStock, IWare } from "@/types";
 import callApi from "@/utils/callApi";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
@@ -52,6 +52,7 @@ const StyledInputContainer = styled.div`
     max-height: 320px;
     z-index: 10;
     border: 1px solid #dbdbdb;
+    overflow: auto;
     &-item {
       padding: 12px;
       cursor: pointer;
@@ -72,24 +73,38 @@ const InputWithSearch = ({
   title,
   _id,
   _type = "name",
+  _index = 0,
+  func,
 }: {
   title: string;
   _id: string;
   _type: "name" | "amount";
+  _index: number;
+  func: any;
 }) => {
-  const [showDropdown, setShowDropdown] = useState(false);
   const ref = useRef();
   useOnClickOutside(ref, () => setShowDropdown(false));
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [dropdownItem, setDropdownItem] = useState<IWare[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const searchQueryDebounce = useDebounce(searchQuery, 200);
-  const [dropdownItem, setDropdownItem] = useState<IWare[]>([]);
+  const [selectedItem, setSelectedItem] = useState<IWare | {}>();
+  const [amount, setAmount] = useState("");
   useEffect(() => {
     if (searchQueryDebounce !== "") {
       callApi
-        .searchWare(searchQueryDebounce)
-        .then((res) => setDropdownItem(res.data));
+        .searchWare(searchQueryDebounce, 1)
+        .then((res) => setDropdownItem(res.data.docs));
     }
   }, [searchQueryDebounce]);
+  useEffect(() => {
+    func(selectedItem, _index);
+  }, [selectedItem]);
+  useEffect(() => {
+    if (amount !== "") {
+      func(parseInt(amount), _index);
+    }
+  }, [amount]);
   return (
     <StyledInputContainer ref={ref}>
       <label className="form-label" htmlFor={_id}>
@@ -100,14 +115,31 @@ const InputWithSearch = ({
         type="text"
         className="form-input"
         id={_id}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        value={_type === "name" ? searchQuery : amount}
+        onChange={(e) => {
+          if (_type === "name") {
+            setSearchQuery(e.target.value);
+            if ((selectedItem as IWare)?._id) {
+              setSelectedItem({});
+            }
+          } else if (_type === "amount") {
+            setAmount(e.target.value);
+          }
+        }}
       />
       {_type === "name" && showDropdown && (
         <div className="dropdown">
           {dropdownItem?.length > 0 &&
             dropdownItem.map((item, index) => (
-              <div className="dropdown-item" key={item._id}>
+              <div
+                className="dropdown-item"
+                key={item._id}
+                onClick={() => {
+                  setSelectedItem(item);
+                  setSearchQuery(item.ten_hang_hoa);
+                  setShowDropdown(false);
+                }}
+              >
                 <div className="dropdown-item-name">{item.ten_hang_hoa}</div>
                 <div className="dropdown-item-amount">
                   Số lượng: {item.so_luong_trong_kho}

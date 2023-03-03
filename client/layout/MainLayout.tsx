@@ -91,20 +91,20 @@ const MainLayout = ({ children }: { children?: ReactNode }) => {
   const [activeId, setActiveId] = useState(0);
   useEffect(() => {
     sidebarList.every((item, index) => {
-      if (`/${router.asPath.split("/")[1]}` === item.href) {
+      if (router.asPath.replace("?", "/").split("/")[1] === item.checkRoute) {
         setActiveId(index);
         return false;
       }
       return true;
     });
-  }, [router]);
+  }, [router.asPath]);
   return (
     <StyledMainLayout>
       <StyledAsideContainer aria-label="Side bar">
         <div className="list-container">
           <ul className="list">
             {sidebarList.map((item, index) => (
-              <Link href={item.href}>
+              <Link key={item.href} href={item.href}>
                 <li
                   key={item.href}
                   className={`list-item ${activeId === index && "active"}`}
@@ -131,46 +131,55 @@ const sidebarList = [
     title: "Trang chủ",
     icon: <HomeOutlined />,
     href: "/",
+    checkRoute: "",
   },
   {
     title: "Nhập hoá đơn",
     icon: <FileAddOutlined />,
     href: "/nhap_hoa_don",
+    checkRoute: "nhap_hoa_don",
   },
   {
     title: "Danh sách hoá đơn",
     icon: <UnorderedListOutlined />,
     href: "/danh_sach_hoa_don?_page=1",
+    checkRoute: "danh_sach_hoa_don",
   },
   {
     title: "Danh sách khách hàng",
     icon: <UnorderedListOutlined />,
     href: "/danh_sach_khach_hang?_page=1",
+    checkRoute: "danh_sach_khach_hang",
   },
   {
     title: "Tìm kiếm hoá đơn",
     icon: <FileSearchOutlined />,
     href: "/tim_kiem_hoa_don",
+    checkRoute: "tim_kiem_hoa_don",
   },
   {
     title: "Tìm kiếm khách hàng",
     icon: <SearchOutlined />,
     href: "/tim_kiem_khach_hang",
+    checkRoute: "tim_kiem_khach_hang",
   },
   {
     title: "Trả nợ",
     icon: <MoneyCollectOutlined />,
     href: "/tra_no",
+    checkRoute: "tra_no",
   },
   {
     title: "Nhập hàng hoá",
     href: "/nhap_hang_hoa?type=unset",
     icon: <ImportOutlined />,
+    checkRoute: "nhap_hang_hoa",
   },
   {
     title: "Danh sách hàng hoá",
-    href: "/danh_sach_hang_hoa",
+    href: "/danh_sach_hang_hoa?_page=1",
     icon: <UnorderedListOutlined />,
+    checkRoute: "danh_sach_hang_hoa",
   },
 ];
 export default MainLayout;

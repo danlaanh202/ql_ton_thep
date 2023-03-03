@@ -1,5 +1,11 @@
+import WareTable from "@/components/table/wareTable";
+import useDebounce from "@/hooks/useDebounce";
 import MainLayout from "@/layout/MainLayout";
+import { IWare } from "@/types";
+import callApi from "@/utils/callApi";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const StyledContainer = styled.div`
@@ -32,6 +38,25 @@ const StyledContainer = styled.div`
   }
 `;
 const index = () => {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchQueryDebounce = useDebounce(searchQuery, 500);
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<IWare[]>([]);
+  const [total, setTotal] = useState(0);
+  useEffect(() => {
+    callApi
+      .searchWare(
+        searchQueryDebounce,
+        parseInt(router.query._page as string) || 1
+      )
+      .then((res) => {
+        setData(res.data.docs);
+        setLoading(false);
+        setTotal(res.data.totalDocs);
+      })
+      .catch((err) => setLoading(false));
+  }, [searchQueryDebounce, router.query._page]);
   return (
     <MainLayout>
       <Head>
@@ -42,16 +67,19 @@ const index = () => {
           <input
             type="text"
             placeholder="Nhập vào tên hàng hoá"
-            // value={personName}
-            // onChange={(e) => {
-            //   setPersonName(e.target.value);
-            //   setLoading(true);
-            // }}
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setLoading(true);
+              router.push("/danh_sach_hang_hoa?_page=1", undefined, {
+                shallow: true,
+              });
+            }}
           />
-          {/* {loading && <div className="spinner"></div>} */}
+          {loading && <div className="spinner"></div>}
         </div>
         <div className="table-container">
-          {/* <InvoiceListTable data={data} setData={setData} /> */}
+          <WareTable total={total} data={data} setData={setData} />
         </div>
       </StyledContainer>
     </MainLayout>

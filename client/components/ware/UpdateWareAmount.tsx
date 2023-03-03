@@ -1,9 +1,14 @@
+import { IStock } from "@/types";
+import _helper from "../../utils/_helper";
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import InputWithSearch from "../form/InputWithSearch";
+import callApi from "@/utils/callApi";
+import Spinner from "../loading/Spinner";
+import useNotifications from "@/hooks/useNotifications";
 
-const StyledUpdateForm = styled.form`
+const StyledUpdateForm = styled.div`
   width: 100%;
   max-width: 1000px;
   margin: auto;
@@ -42,40 +47,119 @@ const StyledUpdateForm = styled.form`
     border: 1px solid #dcdfe6;
     border-radius: 6px;
     cursor: pointer;
-    max-width: 200px;
-    text-align: center;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 `;
+export interface IStockState {
+  stock: IStock;
+  amount: number;
+}
 const UpdateWareAmount = () => {
   const [defaultNumber, setDefaultNumber] = useState(3);
-  return (
-    <StyledUpdateForm>
-      {new Array(defaultNumber).fill(0).map((item, index) => (
-        <div className="row-container" key={`abc ${index}`}>
-          <InputWithSearch
-            _type="name"
-            title="Tên hàng hoá"
-            _id={`hang_hoa_${index}`}
-          />
-          <InputWithSearch
-            _type="amount"
-            title="Số lượng"
-            _id={`so_luong_${index}`}
-          />
-        </div>
-      ))}
+  const [stocks, setStocks] = useState<IStockState[] | {}[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showMsg, contextHolder] = useNotifications();
+  const addStock = (_stock: IStock, _index: number) => {
+    setStocks((_prev) => {
+      let prevArray = [..._prev];
+      for (let i = prevArray.length; i <= _index; i++) {
+        if (i === _index) {
+          prevArray.push({
+            stock: _stock,
+            amount: 0,
+          });
+          return prevArray;
+        }
+        if (!prevArray[_index] && i !== _index) {
+          prevArray.push({
+            stock: {},
+            amount: 0,
+          });
+        }
+      }
 
-      <div className="row-container icon-container">
-        <button
-          onClick={() => setDefaultNumber((prev) => prev + 1)}
-          type="button"
-          className="add-btn"
-        >
-          <PlusCircleOutlined /> Thêm hàng hoá
+      prevArray[_index] = {
+        stock: _stock,
+        amount:
+          typeof (prevArray[_index] as IStockState).amount === "undefined"
+            ? 0
+            : (prevArray[_index] as IStockState).amount,
+      };
+      return prevArray;
+    });
+  };
+  const addAmount = (_amount: number, _index: number) => {
+    setStocks((_prev) => {
+      let prevArray = [..._prev];
+      prevArray[_index] = {
+        stock: { ...(prevArray[_index] as IStockState).stock },
+        amount: _amount,
+      };
+      return prevArray;
+    });
+  };
+  const handleUpdateAmount = async () => {
+    let filterStocks = _helper.removeUndefined(stocks);
+
+    if (
+      loading ||
+      _helper.isDuplicateStock(filterStocks) ||
+      filterStocks.length === 0
+    ) {
+      showMsg("Vui lòng thử lại", "error");
+      return;
+    }
+    setLoading(true);
+    try {
+      await callApi.changeWaresAmount(filterStocks).then((res) => {
+        showMsg("Nhập số lượng thành công", "success");
+        setLoading(false);
+      });
+    } catch (error) {
+      setLoading(false);
+      showMsg("Vui lòng thử lại 1", "error");
+    }
+  };
+  return (
+    <>
+      {contextHolder}
+      <StyledUpdateForm>
+        {new Array(defaultNumber).fill(0).map((item, index) => (
+          <div className="row-container" key={`abc ${index}`}>
+            <InputWithSearch
+              _type="name"
+              title="Tên hàng hoá"
+              _id={`hang_hoa_${index}`}
+              _index={index}
+              func={addStock}
+            />
+            <InputWithSearch
+              _type="amount"
+              title="Số lượng"
+              _id={`so_luong_${index}`}
+              _index={index}
+              func={addAmount}
+            />
+          </div>
+        ))}
+
+        <div className="row-container icon-container">
+          <button
+            onClick={() => setDefaultNumber((prev) => prev + 1)}
+            type="button"
+            className="add-btn"
+          >
+            <PlusCircleOutlined /> Thêm hàng hoá
+          </button>
+        </div>
+        <button className="submit-btn" onClick={handleUpdateAmount}>
+          {loading ? <Spinner /> : "Hoàn tất"}
         </button>
-      </div>
-      <button className="submit-btn">Hoàn tất</button>
-    </StyledUpdateForm>
+      </StyledUpdateForm>
+    </>
   );
 };
 

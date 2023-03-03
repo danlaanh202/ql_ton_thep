@@ -12,7 +12,6 @@ export interface IStock extends IId, ITimeStamps {
   don_gia: number;
   so_luong: number;
   thanh_tien?: number;
-  uuid?: string;
 }
 export interface IPerson extends IId, ITimeStamps {
   ten_khach_hang: string;

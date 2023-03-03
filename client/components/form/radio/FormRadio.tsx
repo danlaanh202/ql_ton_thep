@@ -30,7 +30,7 @@ const FormRadio = ({
   setCheckedValue,
 }: {
   labelString: string;
-  options: string[];
+  options: { id: string; value: string }[];
   checkedValue: string;
   setCheckedValue: Dispatch<SetStateAction<string>>;
 }) => {
@@ -38,7 +38,7 @@ const FormRadio = ({
     <StyledFormRadioContainer>
       <label className="form-label">{labelString}</label>
       <div className="radio-container">
-        {categoryList.map((item, index) => (
+        {options.map((item, index) => (
           <RadioItem
             _id={item.id}
             _value={item.value}
@@ -51,26 +51,5 @@ const FormRadio = ({
     </StyledFormRadioContainer>
   );
 };
-const categoryList = [
-  {
-    id: "ong",
-    value: "Ống",
-  },
-  {
-    id: "hop",
-    value: "Hộp",
-  },
-  {
-    id: "ton",
-    value: "Tôn",
-  },
-  {
-    id: "luoi",
-    value: "Lưới",
-  },
-  {
-    id: "khac",
-    value: "Khác",
-  },
-];
+
 export default FormRadio;

@@ -14,6 +14,7 @@ import { PlusCircleOutlined } from "@ant-design/icons";
 import { easyReadMoney } from "@/utils/convert";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
+import useNotifications from "@/hooks/useNotifications";
 const StyledFormContainer = styled.form`
   width: 100%;
   max-width: 1000px;
@@ -69,6 +70,13 @@ const schema = yup.object({
   ghi_chu: yup.string(),
   dia_chi: yup.string().required(),
 });
+
+export interface IStocksState {
+  hang_hoa: IStock;
+  don_gia: number;
+  so_luong: number;
+}
+
 const index = () => {
   const {
     handleSubmit,
@@ -79,63 +87,65 @@ const index = () => {
     mode: "onChange",
     resolver: yupResolver(schema),
   });
-  const [stocks, setStocks] = useState<IStock[]>([]);
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [stocks, setStocks] = useState<IStocksState[]>([]);
   const [defaultNumber, setDefaultNumber] = useState(3);
   const [buyDate, setBuyDate] = useState<Date>(new Date());
   const [totalPrice, setTotalPrice] = useState(0);
   const [searchPeople, setSearchPeople] = useState<IPerson[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedPerson, setSelectedPerson] = useState<IPerson>();
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [showMsg, contextHolder] = useNotifications();
 
   const onSubmitHandler = async (data: any) => {
     if (!isValid) {
-      console.log("looix");
+      showMsg("Có lỗi xảy ra", "error");
       setIsLoading(false);
       return;
     }
 
     try {
       if (selectedPerson?.ten_khach_hang !== searchQuery) {
-        callApi.createPerson(data, searchQuery).then((response) =>
-          callApi
-            .createInvoice(
-              { ...data, stocks, buyDate, totalPrice },
-              response.data._id
-            )
-            .then((res) => {
-              console.log(res.data);
-              setIsLoading(false);
-              router.push("/danh_sach_hoa_don");
-            })
+        await callApi.createPerson(data, searchQuery).then(
+          async (response) =>
+            await callApi
+              .createInvoice(
+                { ...data, stocks, buyDate, totalPrice },
+                response.data._id
+              )
+              .then((res) => {
+                showMsg("Tạo hoá đơn thành công", "success");
+                setIsLoading(false);
+                router.push("/danh_sach_hoa_don?_page=1");
+              })
         );
       } else {
         console.log("đã tồn tại");
-        callApi
+        await callApi
           .createInvoice(
             { ...data, stocks, buyDate, totalPrice },
             selectedPerson._id
           )
           .then((res) => {
-            console.log(res.data);
+            showMsg("Tạo hoá đơn thành công", "success");
             setIsLoading(false);
-            router.push("/danh_sach_hoa_don");
+            router.push("/danh_sach_hoa_don?_page=1");
           });
       }
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    setTotalPrice(
-      stocks.reduce(
-        (prev, curr: IStock) =>
-          curr.ten_mat_hang ? prev + (curr?.thanh_tien as number) : prev,
-        0
-      )
-    );
-  }, [stocks]);
+  // useEffect(() => {
+  //   setTotalPrice(
+  //     stocks.reduce(
+  //       (prev, curr: IStock) =>
+  //         curr.ten_mat_hang ? prev + (curr?.thanh_tien as number) : prev,
+  //       0
+  //     )
+  //   );
+  // }, [stocks]);
   useEffect(() => {
     if (searchQuery !== "")
       callApi
@@ -153,97 +163,100 @@ const index = () => {
   }, [selectedPerson, searchQuery]);
 
   return (
-    <MainLayout>
-      <Head>
-        <title>Nhập hoá đơn</title>
-      </Head>
-      <StyledFormContainer
-        onSubmit={handleSubmit(onSubmitHandler as SubmitHandler<FieldValues>)}
-      >
-        <div className="hoadon-title">Thông tin người mua hàng</div>
-        <div className="row-container">
-          <FormInput
-            control={control}
-            labelString="Tên khách hàng"
-            inputId="ten_khach_hang"
-            withSearch={true}
-            outerVal={searchQuery}
-            setOuterVal={setSearchQuery}
-            setSelectVal={setSelectedPerson}
-            dropdownData={searchPeople}
-          />
-          <FormInput
-            control={control}
-            labelString="Số điện thoại"
-            inputId="so_dien_thoai"
-            disabled={searchQuery === selectedPerson?.ten_khach_hang}
-            disabledVal={selectedPerson?.so_dien_thoai}
-          />
-          <FormInput
-            control={control}
-            labelString="Địa chỉ"
-            inputId="dia_chi"
-            disabled={searchQuery === selectedPerson?.ten_khach_hang}
-            disabledVal={selectedPerson?.dia_chi}
-          />
-        </div>
-        <div className="hoadon-title">Hoá đơn bán hàng</div>
-        {new Array(defaultNumber).fill(0).map((item, index) => (
-          <StockRow
-            key={index}
-            setStocks={setStocks}
-            stocks={stocks}
-            index={index}
-          />
-        ))}
-        <div className="row-container icon-container">
-          <button
-            onClick={() => setDefaultNumber((prev) => prev + 1)}
-            type="button"
-            className="add-btn"
-          >
-            <PlusCircleOutlined /> Thêm hàng hoá
-          </button>
-        </div>
+    <>
+      {contextHolder}
+      <MainLayout>
+        <Head>
+          <title>Nhập hoá đơn</title>
+        </Head>
+        <StyledFormContainer
+          onSubmit={handleSubmit(onSubmitHandler as SubmitHandler<FieldValues>)}
+        >
+          <div className="hoadon-title">Thông tin người mua hàng</div>
+          <div className="row-container">
+            <FormInput
+              control={control}
+              labelString="Tên khách hàng"
+              inputId="ten_khach_hang"
+              withSearch={true}
+              outerVal={searchQuery}
+              setOuterVal={setSearchQuery}
+              setSelectVal={setSelectedPerson}
+              dropdownData={searchPeople}
+            />
+            <FormInput
+              control={control}
+              labelString="Số điện thoại"
+              inputId="so_dien_thoai"
+              disabled={searchQuery === selectedPerson?.ten_khach_hang}
+              disabledVal={selectedPerson?.so_dien_thoai}
+            />
+            <FormInput
+              control={control}
+              labelString="Địa chỉ"
+              inputId="dia_chi"
+              disabled={searchQuery === selectedPerson?.ten_khach_hang}
+              disabledVal={selectedPerson?.dia_chi}
+            />
+          </div>
+          <div className="hoadon-title">Hoá đơn bán hàng</div>
+          {new Array(defaultNumber).fill(0).map((item, index) => (
+            <StockRow
+              key={index}
+              setStocks={setStocks}
+              stocks={stocks}
+              index={index}
+            />
+          ))}
+          <div className="row-container icon-container">
+            <button
+              onClick={() => setDefaultNumber((prev) => prev + 1)}
+              type="button"
+              className="add-btn"
+            >
+              <PlusCircleOutlined /> Thêm hàng hoá
+            </button>
+          </div>
 
-        <div className="row-container total">
-          Tổng tiền hoá đơn: {easyReadMoney(totalPrice)}
-        </div>
-        <div className="row-container">
-          <FormInput
-            control={control}
-            labelString="Số tiền khách trả (Nghìn đồng)"
-            inputId="so_tien_tra"
-            error={!!errors.so_tien_tra}
-          />
-          <FormInput
-            control={control}
-            labelString="Ngày mua"
-            type="date"
-            inputId="ngay_mua"
-            setOuterDate={setBuyDate}
-            outerDate={buyDate}
-          />
-        </div>
-        <div className="row-container">
-          <FormInput
-            control={control}
-            labelString="Ghi chú"
-            inputId="ghi_chu"
-            type="textarea"
-          />
-        </div>
-        <button type="submit" className="submit-btn">
-          {!isLoading ? (
-            <>Lưu hoá đơn</>
-          ) : (
-            <>
-              <Spinner />
-            </>
-          )}
-        </button>
-      </StyledFormContainer>
-    </MainLayout>
+          <div className="row-container total">
+            Tổng tiền hoá đơn: {easyReadMoney(totalPrice)}
+          </div>
+          <div className="row-container">
+            <FormInput
+              control={control}
+              labelString="Số tiền khách trả (Nghìn đồng)"
+              inputId="so_tien_tra"
+              error={!!errors.so_tien_tra}
+            />
+            <FormInput
+              control={control}
+              labelString="Ngày mua"
+              type="date"
+              inputId="ngay_mua"
+              setOuterDate={setBuyDate}
+              outerDate={buyDate}
+            />
+          </div>
+          <div className="row-container">
+            <FormInput
+              control={control}
+              labelString="Ghi chú"
+              inputId="ghi_chu"
+              type="textarea"
+            />
+          </div>
+          <button type="submit" className="submit-btn">
+            {!isLoading ? (
+              <>Lưu hoá đơn</>
+            ) : (
+              <>
+                <Spinner />
+              </>
+            )}
+          </button>
+        </StyledFormContainer>
+      </MainLayout>
+    </>
   );
 };
 
