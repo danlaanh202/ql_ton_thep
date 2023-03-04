@@ -96,9 +96,7 @@ const FormInputNoControl = ({
     handleInput(selectedItem, _index);
   }, [selectedItem]);
   useEffect(() => {
-    if (amount !== "") {
-      handleInput(parseInt(amount), _index);
-    }
+    handleInput(parseInt(amount), _index);
   }, [amount]);
   useEffect(() => {
     handleInput(parseInt(price), _index);

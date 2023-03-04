@@ -1,4 +1,5 @@
 import { IStockState } from "@/components/ware/UpdateWareAmount";
+import { IStocksState } from "@/pages/nhap_hoa_don";
 import { IStock, IWare } from "@/types";
 import axios from "axios";
 
@@ -11,10 +12,8 @@ export default new (class CallApi {
   async createInvoice(data: any, _id: string) {
     return await publicRequest.post("/invoice/post", {
       khach_hang_id: _id,
-      so_tien_tra: data.so_tien_tra * 1000,
-      hang_hoa: data.stocks.filter((element: IStock) => {
-        return element.ten_mat_hang !== "";
-      }),
+      so_tien_tra: data.so_tien_tra,
+      hang_hoa: data.stocks as IStocksState[],
       ngay_mua: data.buyDate.toISOString(),
       ghi_chu: data.ghi_chu,
       tong_tien: data.totalPrice,
@@ -30,10 +29,11 @@ export default new (class CallApi {
       },
     });
   }
-  async getInvoicesWithQuery(personName: string) {
+  async getInvoicesWithQuery(personName: string, _page: number | string) {
     return await publicRequest.get("/invoice/get_with_query", {
       params: {
         ten_khach_hang: personName,
+        _page: _page,
       },
     });
   }
@@ -66,10 +66,11 @@ export default new (class CallApi {
   async getPeople() {
     return await publicRequest.get("/person/get");
   }
-  async getPeopleWithSearchQuery(_searchQuery: string) {
+  async getPeopleWithSearchQuery(_searchQuery: string, _page: number) {
     return await publicRequest.get("/person/get_people", {
       params: {
         ten_khach_hang: _searchQuery,
+        _page: _page,
       },
     });
   }

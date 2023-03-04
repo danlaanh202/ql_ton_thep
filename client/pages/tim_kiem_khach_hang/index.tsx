@@ -3,6 +3,7 @@ import useDebounce from "@/hooks/useDebounce";
 import MainLayout from "@/layout/MainLayout";
 import { IPerson } from "@/types";
 import callApi from "@/utils/callApi";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 const StyledSearchContainer = styled.div`
@@ -39,19 +40,25 @@ const index = () => {
   const personNameDebounce = useDebounce(personName, 500);
   const [data, setData] = useState<IPerson[]>([]);
   const [loading, setLoading] = useState(false);
+  const [totalDocs, setTotalDocs] = useState(0);
+  const router = useRouter();
   useEffect(() => {
     if (personNameDebounce !== "") {
       callApi
-        .getPeopleWithSearchQuery(personNameDebounce)
+        .getPeopleWithSearchQuery(
+          personNameDebounce,
+          parseInt(router.query._page as string) || 1
+        )
         .then((res) => {
-          setData(res.data);
+          setTotalDocs(res.data.totalDocs);
+          setData(res.data.docs);
           setLoading(false);
         })
         .catch((err) => setLoading(false));
     } else {
       setLoading(false);
     }
-  }, [personNameDebounce]);
+  }, [personNameDebounce, router.query._page]);
   return (
     <MainLayout>
       <title>Tìm kiếm khách hàng</title>
@@ -62,6 +69,9 @@ const index = () => {
             placeholder="Nhập vào tên khách hàng"
             value={personName}
             onChange={(e) => {
+              router.push("/tim_kiem_khach_hang?_page=1", undefined, {
+                shallow: true,
+              });
               setLoading(true);
               setPersonName(e.target.value);
             }}
@@ -69,7 +79,7 @@ const index = () => {
           {loading && <div className="spinner"></div>}
         </div>
         <div className="table-container">
-          <PersonTable data={data} setData={setData} />
+          <PersonTable total={totalDocs} data={data} setData={setData} />
         </div>
       </StyledSearchContainer>
     </MainLayout>

@@ -3,6 +3,7 @@ import useDebounce from "@/hooks/useDebounce";
 import MainLayout from "@/layout/MainLayout";
 import { IInvoiceVar, IPerson } from "@/types";
 import callApi from "@/utils/callApi";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 const StyledSearchContainer = styled.div`
@@ -39,20 +40,25 @@ const index = () => {
   const personNameDebounce = useDebounce(personName, 500);
   const [data, setData] = useState<IInvoiceVar[]>([]);
   const [loading, setLoading] = useState(false);
+  const [totalDoc, setTotalDoc] = useState(0);
+  const router = useRouter();
   useEffect(() => {
     if (personNameDebounce !== "") {
       callApi
-        .getInvoicesWithQuery(personNameDebounce)
+        .getInvoicesWithQuery(
+          personNameDebounce,
+          parseInt(router.query._page as string) || 1
+        )
         .then((res) => {
-          console.log(res.data);
-          setData(res.data);
+          setTotalDoc(res.data.totalDocs);
+          setData(res.data.docs);
           setLoading(false);
         })
         .catch((err) => setLoading(false));
     } else {
       setLoading(false);
     }
-  }, [personNameDebounce]);
+  }, [personNameDebounce, router.query._page]);
   return (
     <MainLayout>
       <title>Tìm kiếm hoá đơn</title>
@@ -65,12 +71,15 @@ const index = () => {
             onChange={(e) => {
               setPersonName(e.target.value);
               setLoading(true);
+              router.push("/tim_kiem_hoa_don?_page=1", undefined, {
+                shallow: true,
+              });
             }}
           />
           {loading && <div className="spinner"></div>}
         </div>
         <div className="table-container">
-          <InvoiceListTable data={data} setData={setData} />
+          <InvoiceListTable total={totalDoc} data={data} setData={setData} />
         </div>
       </StyledSearchContainer>
     </MainLayout>

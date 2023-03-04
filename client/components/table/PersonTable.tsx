@@ -69,7 +69,8 @@ const PersonTable = ({ data, setData, total }: IData<IPerson[]>) => {
   const [editingKey, setEditingKey] = useState("");
   const router = useRouter();
   const onChange: PaginationProps["onChange"] = (_page: number) => {
-    router.push(`/danh_sach_hoa_don?_page=${_page}`);
+    router.query._page = `${_page}`;
+    router.push(router);
   };
 
   const isEditing = (record: Item) => record._id === editingKey;

@@ -88,7 +88,7 @@ const InputWithSearch = ({
   const [dropdownItem, setDropdownItem] = useState<IWare[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const searchQueryDebounce = useDebounce(searchQuery, 200);
-  const [selectedItem, setSelectedItem] = useState<IWare | {}>();
+  const [selectedItem, setSelectedItem] = useState<IWare | {}>({});
   const [amount, setAmount] = useState("");
   useEffect(() => {
     if (searchQueryDebounce !== "") {
@@ -101,9 +101,7 @@ const InputWithSearch = ({
     func(selectedItem, _index);
   }, [selectedItem]);
   useEffect(() => {
-    if (amount !== "") {
-      func(parseInt(amount), _index);
-    }
+    func(parseInt(amount), _index);
   }, [amount]);
   return (
     <StyledInputContainer ref={ref}>

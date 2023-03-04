@@ -5,13 +5,19 @@ const db = require("../models");
 
 const InvoicesServices = require("../services/InvoicesServices");
 const checkUndefinedObject = require("../../lib/checkUndefinedObject");
+const mongoose = require("mongoose");
 
 class InvoiceController {
   async createInvoice(req, res) {
     const newInvoice = new db.Invoice({
       khach_hang: req.body.khach_hang_id,
       so_tien_tra: req.body.so_tien_tra,
-      hang_hoa: req.body.hang_hoa,
+      hang_hoa: req.body.hang_hoa.map((item) => {
+        return {
+          ...item,
+          hang_hoa: mongoose.Types.ObjectId(item.hang_hoa._id),
+        };
+      }),
       ngay_mua: req.body.ngay_mua,
       ghi_chu: `Tạo hoá đơn với số tiền ban đầu là: ${VND(
         req.body.so_tien_tra
@@ -51,7 +57,8 @@ class InvoiceController {
   async getInvoicesByName(req, res) {
     try {
       const invoices = await InvoicesServices.getByName(
-        req.query.ten_khach_hang
+        req.query.ten_khach_hang,
+        req.query._page || 1
       );
       return res.status(200).json(invoices);
     } catch (error) {

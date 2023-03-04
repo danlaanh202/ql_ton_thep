@@ -95,7 +95,7 @@ const InvoiceItemsTable = ({ originData }: { originData: IStock[] }) => {
   const columns = [
     {
       title: "Tên hàng hoá",
-      dataIndex: "ten_mat_hang",
+      dataIndex: ["hang_hoa", "ten_hang_hoa"],
       width: "300px",
       editable: true,
     },

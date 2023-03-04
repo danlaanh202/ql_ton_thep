@@ -86,7 +86,8 @@ const InvoiceListTable = ({
   };
   const router = useRouter();
   const onChange: PaginationProps["onChange"] = (_page) => {
-    router.push(`/danh_sach_hoa_don?_page=${_page}`);
+    router.query._page = `${_page}`;
+    router.push(router);
   };
   const cancel = () => {
     setEditingKey("");
@@ -275,7 +276,6 @@ const InvoiceListTable = ({
               </div>
             </StyledExpandableContainer>
           ),
-          // rowExpandable: (record) => record.name !== "Not Expandable",
         }}
       />
     </Form>

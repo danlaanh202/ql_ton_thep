@@ -95,7 +95,7 @@ const UpdateWareAmount = () => {
     setStocks((_prev) => {
       let prevArray = [..._prev];
       prevArray[_index] = {
-        stock: { ...(prevArray[_index] as IStockState).stock },
+        ...prevArray[_index],
         amount: _amount,
       };
       return prevArray;
@@ -123,6 +123,10 @@ const UpdateWareAmount = () => {
       showMsg("Vui lòng thử lại 1", "error");
     }
   };
+  useEffect(() => {
+    console.log(_helper.isDuplicateStock(_helper.removeUndefined(stocks)));
+    console.log(_helper.removeUndefined(stocks));
+  }, [stocks]);
   return (
     <>
       {contextHolder}

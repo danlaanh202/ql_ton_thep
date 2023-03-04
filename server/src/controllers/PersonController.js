@@ -19,12 +19,10 @@ class PersonController {
   }
   async getPeopleWithSearchQuery(req, res) {
     try {
-      const findedPeople = await PersonModel.find({
-        ten_khach_hang: {
-          $regex: req.query?.ten_khach_hang,
-          $options: "i",
-        },
-      });
+      const findedPeople = await PeopleServices.getPeopleWithSearchQuery(
+        req.query.ten_khach_hang,
+        req.query._page || 1
+      );
       return res.status(200).json(findedPeople);
     } catch (error) {
       return res.status(500).json(error);

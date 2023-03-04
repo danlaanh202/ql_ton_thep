@@ -6,15 +6,16 @@ import Head from "next/head";
 import styled from "styled-components";
 import Spinner from "@/components/loading/Spinner";
 import StockRow from "@/components/form/StockRow";
-import callApi, { publicRequest } from "@/utils/callApi";
+import callApi from "@/utils/callApi";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { IPerson, IStock } from "@/types";
+import { IPerson, IStock, IWare } from "@/types";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { easyReadMoney } from "@/utils/convert";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import useNotifications from "@/hooks/useNotifications";
+import _helper from "@/utils/_helper";
 const StyledFormContainer = styled.form`
   width: 100%;
   max-width: 1000px;
@@ -72,7 +73,7 @@ const schema = yup.object({
 });
 
 export interface IStocksState {
-  hang_hoa: IStock;
+  hang_hoa: IWare | {};
   don_gia: number;
   so_luong: number;
 }
@@ -90,7 +91,7 @@ const index = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [stocks, setStocks] = useState<IStocksState[]>([]);
+  const [stocks, setStocks] = useState<IStocksState[] | {}[]>([]);
   const [defaultNumber, setDefaultNumber] = useState(3);
   const [buyDate, setBuyDate] = useState<Date>(new Date());
   const [totalPrice, setTotalPrice] = useState(0);
@@ -99,7 +100,14 @@ const index = () => {
   const [showMsg, contextHolder] = useNotifications();
 
   const onSubmitHandler = async (data: any) => {
-    if (!isValid) {
+    setIsLoading(true);
+    let filterStocks = _helper.removeUndefinedFromInvoices(stocks);
+    if (
+      !isValid ||
+      isLoading ||
+      _helper.isDuplicateFromInvoices(filterStocks) ||
+      filterStocks.length === 0
+    ) {
       showMsg("Có lỗi xảy ra", "error");
       setIsLoading(false);
       return;
@@ -111,7 +119,7 @@ const index = () => {
           async (response) =>
             await callApi
               .createInvoice(
-                { ...data, stocks, buyDate, totalPrice },
+                { ...data, stocks: filterStocks, buyDate, totalPrice },
                 response.data._id
               )
               .then((res) => {
@@ -121,10 +129,10 @@ const index = () => {
               })
         );
       } else {
-        console.log("đã tồn tại");
+        // console.log("đã tồn tại");
         await callApi
           .createInvoice(
-            { ...data, stocks, buyDate, totalPrice },
+            { ...data, stocks: filterStocks, buyDate, totalPrice },
             selectedPerson._id
           )
           .then((res) => {
@@ -134,23 +142,27 @@ const index = () => {
           });
       }
     } catch (error) {
+      showMsg("Có lỗi khi tạo hoá đơn", "error");
       console.log(error);
     }
   };
-  // useEffect(() => {
-  //   setTotalPrice(
-  //     stocks.reduce(
-  //       (prev, curr: IStock) =>
-  //         curr.ten_mat_hang ? prev + (curr?.thanh_tien as number) : prev,
-  //       0
-  //     )
-  //   );
-  // }, [stocks]);
+
+  useEffect(() => {
+    setTotalPrice(
+      (stocks as IStocksState[]).reduce(
+        (prev: number, curr: IStocksState) =>
+          (curr.hang_hoa as IWare)._id
+            ? prev + (curr.don_gia * curr.so_luong || 0)
+            : prev,
+        0
+      )
+    );
+  }, [stocks]);
   useEffect(() => {
     if (searchQuery !== "")
       callApi
-        .getPeopleWithSearchQuery(searchQuery)
-        .then((res) => setSearchPeople(res.data));
+        .getPeopleWithSearchQuery(searchQuery, 1)
+        .then((res) => setSearchPeople(res.data.docs));
     if (searchQuery !== selectedPerson?.ten_khach_hang) {
       setSelectedPerson({} as IPerson);
     }
@@ -224,8 +236,9 @@ const index = () => {
           <div className="row-container">
             <FormInput
               control={control}
-              labelString="Số tiền khách trả (Nghìn đồng)"
+              labelString="Số tiền khách trả"
               inputId="so_tien_tra"
+              placeholder="Ví dụ: 60000"
               error={!!errors.so_tien_tra}
             />
             <FormInput
