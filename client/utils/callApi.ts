@@ -99,4 +99,16 @@ export default new (class CallApi {
       updateWares: _data,
     });
   }
+  async editWare(_data: IWare) {
+    return await publicRequest.put("/ware/update", {
+      ware: _data,
+    });
+  }
+  async deleteWare(_id: string) {
+    return await publicRequest.delete("ware/delete", {
+      params: {
+        _id,
+      },
+    });
+  }
 })();

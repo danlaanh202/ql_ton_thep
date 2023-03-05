@@ -36,6 +36,7 @@ const StyledFormInput = styled.div<IProps>`
     color: black;
     padding: 12px;
     border-radius: 4px;
+    height: 44px;
     ::placeholder {
       color: #d2c9cc;
     }

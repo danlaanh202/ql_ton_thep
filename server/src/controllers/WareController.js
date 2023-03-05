@@ -30,7 +30,7 @@ module.exports = new (class {
   }
   async editWare(req, res) {
     try {
-      const doc = await WareServices.editWare();
+      const doc = await WareServices.editWare(req.body.ware);
       return res.status(200).json(doc);
     } catch (error) {
       return res.status(500).json(error);
@@ -44,6 +44,14 @@ module.exports = new (class {
         req.query._limit
       );
       return res.status(200).json(doc);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  }
+  async deleteWare(req, res) {
+    try {
+      const deleteDoc = await WareServices.deleteWare(req.query._id);
+      return res.status(200).json(deleteDoc);
     } catch (error) {
       return res.status(500).json(error);
     }

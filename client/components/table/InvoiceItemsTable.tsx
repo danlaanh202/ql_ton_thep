@@ -56,6 +56,7 @@ const InvoiceItemsTable = ({ originData }: { originData: IStock[] }) => {
   const [data, setData] = useState(originData);
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record: Item) => record._id === editingKey;
+  console.log(originData);
   const edit = (record: Partial<Item> & { key: React.Key }) => {
     form.setFieldsValue({ name: "", age: "", address: "", ...record });
     setEditingKey(record._id as string);

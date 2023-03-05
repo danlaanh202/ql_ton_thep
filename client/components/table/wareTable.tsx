@@ -11,6 +11,8 @@ import {
 import { IStock, IWare } from "@/types";
 import { easyReadMoney } from "@/utils/convert";
 import { useRouter } from "next/router";
+import callApi from "@/utils/callApi";
+import useNotifications from "@/hooks/useNotifications";
 
 interface Item extends IStock {
   key: React.Key;
@@ -73,9 +75,12 @@ const WareTable = ({
   const router = useRouter();
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record: IWare) => record._id === editingKey;
+  const [showMsg, contextHolder] = useNotifications();
+
   const edit = (record: Partial<IWare> & { key: React.Key }) => {
     form.setFieldsValue({ name: "", age: "", address: "", ...record });
     setEditingKey(record._id as string);
+    console.log(data);
   };
   const onChange: PaginationProps["onChange"] = (_page) => {
     router.push(`/danh_sach_hang_hoa?_page=${_page}`);
@@ -95,48 +100,62 @@ const WareTable = ({
           ...item,
           ...row,
         });
-        setData(newData);
-        setEditingKey("");
+        await callApi
+          .editWare(newData[index])
+          .then((res) => {
+            console.log(res.data);
+            showMsg("Sửa thành công", "success");
+            setData(newData);
+            setEditingKey("");
+          })
+          .catch((err) => showMsg("Có lỗi xảy ra", "error"));
       } else {
         newData.push(row);
         setData(newData);
         setEditingKey("");
       }
-      console.log(newData[index]);
+      // console.log(newData[index]);
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
   };
-  const handleDelete = (key: React.Key) => {
-    const newData = data.filter((item) => item._id !== key);
-    setData(newData);
+  const handleDelete = async (key: React.Key) => {
+    try {
+      await callApi.deleteWare(key as string).then((res) => {
+        const newData = data.filter((item) => item._id !== key);
+        showMsg("Xoá thành công", "success");
+        setData(newData);
+      });
+    } catch (error) {
+      showMsg("Có lỗi", "error");
+    }
   };
   const columns = [
     {
       title: "Tên hàng hoá",
       dataIndex: "ten_hang_hoa",
-      width: "300px",
+      width: "400px",
       editable: true,
     },
     {
       title: "Số lượng",
       dataIndex: "so_luong_trong_kho",
-      width: "300px",
+      width: "100px",
       editable: true,
     },
     {
       title: "Đơn giá",
       dataIndex: "gia_ban",
-      width: "500px",
+      width: "200px",
       editable: true,
-      render: (_: any, record: IWare) => easyReadMoney(record.gia_ban),
+      render: (_: any, record: IWare) => easyReadMoney(Number(record.gia_ban)),
     },
     {
       title: "Giá nhập",
       dataIndex: "gia_nhap",
-      width: "300px",
+      width: "200px",
       editable: true,
-      render: (_: any, record: IWare) => easyReadMoney(record.gia_nhap),
+      render: (_: any, record: IWare) => easyReadMoney(Number(record.gia_nhap)),
     },
     {
       title: "Hành Động",
@@ -196,25 +215,28 @@ const WareTable = ({
   });
 
   return (
-    <Form form={form} component={false}>
-      <Table
-        components={{
-          body: {
-            cell: EditableCell,
-          },
-        }}
-        pagination={{
-          onChange: onChange,
-          current: parseInt(router.query._page as string),
-          total: total,
-        }}
-        bordered
-        dataSource={data as IWare[]}
-        columns={mergedColumns}
-        rowClassName="editable-row"
-        rowKey="_id"
-      />
-    </Form>
+    <>
+      {contextHolder}
+      <Form form={form} component={false}>
+        <Table
+          components={{
+            body: {
+              cell: EditableCell,
+            },
+          }}
+          pagination={{
+            onChange: onChange,
+            current: parseInt(router.query._page as string),
+            total: total,
+          }}
+          bordered
+          dataSource={data as IWare[]}
+          columns={mergedColumns}
+          rowClassName="editable-row"
+          rowKey="_id"
+        />
+      </Form>
+    </>
   );
 };
 

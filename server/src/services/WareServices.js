@@ -6,7 +6,7 @@ module.exports = new (class {
   async getWithPagination(_page, _limit) {
     const options = {
       limit: _limit || 10,
-      offset: (parseInt(_page) - 1) * _limit,
+      offset: (Number(_page) - 1) * _limit,
       sort: { updated_at: -1 },
     };
     return await db.Ware.paginate({}, options);
@@ -42,22 +42,24 @@ module.exports = new (class {
   async editWare(doc) {
     return await db.Ware.findByIdAndUpdate(
       doc._id,
-      checkUndefinedObject({
+      {
         ten_hang_hoa: doc.ten_hang_hoa,
-        gia_ban: doc.gia_ban,
-        gia_nhap: doc.gia_nhap,
-        so_luong_trong_kho: doc.so_luong_trong_kho,
-        so_luong_da_ban: doc.so_luong_da_ban,
-        do_day: doc.do_day,
-        trong_luong: doc.trong_luong,
-      })
+        gia_ban: Number(doc.gia_ban),
+        gia_nhap: Number(doc.gia_nhap),
+        so_luong_trong_kho: Number(doc.so_luong_trong_kho),
+        so_luong_da_ban: Number(doc.so_luong_da_ban),
+      },
+      { new: true }
     );
   }
   async searchWare(_searchQuery, _page = 1, _limit = 10) {
     const options = {
       limit: _limit,
-      offset: (parseInt(_page) - 1) * _limit || 0,
-      sort: { updated_at: -1 },
+      offset: (Number(_page) - 1) * _limit || 0,
+      sort: {
+        ten_hang_hoa: 1,
+        //  updated_at: -1
+      },
     };
     return await db.Ware.paginate(
       {
@@ -68,5 +70,8 @@ module.exports = new (class {
       },
       options
     );
+  }
+  async deleteWare(_id) {
+    return await db.Ware.findByIdAndDelete(_id);
   }
 })();

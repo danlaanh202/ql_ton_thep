@@ -89,4 +89,16 @@ module.exports = new (class {
       { new: true }
     );
   }
+  async suaHangHoaTrongHoaDon(_data) {
+    return await db.Invoice.findOneAndUpdate(
+      {
+        "hang_hoa._id": mongoose.Types.ObjectId(_data._id),
+      },
+      {
+        "hang_hoa.$.so_luong": _data.so_luong,
+        "hang_hoa.$.don_gia": _data.don_gia,
+      },
+      { new: true }
+    );
+  }
 })();

@@ -73,6 +73,15 @@ class InvoiceController {
       return res.status(500).json(error);
     }
   }
+  async editWareListsOfInvoice(req, res) {
+    try {
+      const result = await InvoicesServices.suaHangHoaTrongHoaDon();
+
+      return res.status(200).json(result);
+    } catch (error) {
+      return res.status(200).json(error);
+    }
+  }
 
   // ====================
   async getInvoicesWithPagination(req, res) {
