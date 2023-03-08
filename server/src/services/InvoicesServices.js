@@ -2,6 +2,7 @@ const checkUndefinedObject = require("../../lib/checkUndefinedObject");
 const { updatePersonMoneyById } = require("../../lib/personHandle");
 const db = require("../models");
 const WareServices = require("./WareServices");
+const PeopleServices = require("./PeopleServices");
 
 module.exports = new (class {
   async createInvoiceFunc(data, newInvoice) {
@@ -21,18 +22,28 @@ module.exports = new (class {
   }
   async getAllInvoices() {
     return await db.Invoice.find({})
-      .populate({
-        path: "khach_hang",
-      })
+      .populate([
+        {
+          path: "khach_hang",
+        },
+        {
+          path: "hang_hoa.hang_hoa",
+        },
+      ])
       .sort({ created_at: -1 });
   }
   async getInvoicesOfId(_id) {
     return await db.Invoice.find({
       khach_hang: _id,
     })
-      .populate({
-        path: "khach_hang",
-      })
+      .populate([
+        {
+          path: "khach_hang",
+        },
+        {
+          path: "hang_hoa.hang_hoa",
+        },
+      ])
       .sort({ created_at: -1 });
   }
 
@@ -90,15 +101,47 @@ module.exports = new (class {
     );
   }
   async suaHangHoaTrongHoaDon(_data) {
-    return await db.Invoice.findOneAndUpdate(
+    // _data: { hang_hoa, so_luong, don_gia, _id }
+
+    // after editing we must edit ware amount, persontong_so_tien, tong_so_no
+
+    const oldData = await db.Invoice.findOneAndUpdate(
       {
-        "hang_hoa._id": mongoose.Types.ObjectId(_data._id),
+        "hang_hoa._id": _data._id,
       },
       {
-        "hang_hoa.$.so_luong": _data.so_luong,
-        "hang_hoa.$.don_gia": _data.don_gia,
+        "hang_hoa.$.so_luong": Number(_data.so_luong),
+        "hang_hoa.$.don_gia": Number(_data.don_gia),
+      }
+    );
+    // console.log(oldData);
+    let oldHangHoa = oldData.hang_hoa.find(
+      (e) => e._id.toString() === _data._id
+    );
+
+    // console.log(oldHangHoa);
+    const p1 = WareServices.changeWareAmount([
+      {
+        stock: _data.hang_hoa,
+        amount: -(Number(_data.so_luong) - Number(oldHangHoa.so_luong)),
+      },
+    ]);
+    const p2 = PeopleServices.updateWhenChangeInvoice(
+      oldData.khach_hang,
+      Number(_data.so_luong) * Number(_data.don_gia) -
+        Number(oldHangHoa.so_luong) * Number(oldHangHoa.don_gia)
+    );
+    const p3 = db.Invoice.findByIdAndUpdate(
+      oldData._id,
+      {
+        $inc: {
+          tong_tien:
+            Number(_data.so_luong) * Number(_data.don_gia) -
+            Number(oldHangHoa.so_luong) * Number(oldHangHoa.don_gia),
+        },
       },
       { new: true }
     );
+    return await Promise.all([p1, p2, p3]);
   }
 })();

@@ -24,4 +24,16 @@ module.exports = new (class {
       options
     );
   }
+  async updateWhenChangeInvoice(_id, so_tien) {
+    return await db.Person.findByIdAndUpdate(
+      _id,
+      {
+        $inc: {
+          tong_tien_mua: so_tien,
+          so_tien_no: so_tien,
+        },
+      },
+      { new: true }
+    );
+  }
 })();

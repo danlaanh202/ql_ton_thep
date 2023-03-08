@@ -14,7 +14,7 @@ const InvoiceList = () => {
     callApi
       .getInvoicesWithPagination(parseInt(router.query._page as string) || 1)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setTotalDocs(response.data.totalDocs);
         setData(response.data.docs);
       });

@@ -55,6 +55,9 @@ export default new (class CallApi {
       },
     });
   }
+  async editWareOfInvoice(_data: any) {
+    return await publicRequest.put("/invoice/change_ware_of_invoice", _data);
+  }
   // ================================== PEOPLE/CUSTOMER =======================
   async createPerson(_data: any, _searchQuery: string) {
     return await publicRequest.post("/person/post", {

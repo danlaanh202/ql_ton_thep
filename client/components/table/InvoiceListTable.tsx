@@ -80,11 +80,11 @@ const InvoiceListTable = ({
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record: Item) => record._id === editingKey;
+  const router = useRouter();
   const edit = (record: Partial<Item> & { key: React.Key }) => {
     form.setFieldsValue({ name: "", age: "", dia_chi: "", ...record });
     setEditingKey(record._id as string);
   };
-  const router = useRouter();
   const onChange: PaginationProps["onChange"] = (_page) => {
     router.query._page = `${_page}`;
     router.push(router);
@@ -106,7 +106,6 @@ const InvoiceListTable = ({
         });
 
         setData(newData);
-
         setEditingKey("");
       } else {
         newData.push(row);
@@ -232,7 +231,13 @@ const InvoiceListTable = ({
       }),
     };
   });
-
+  const updateData = (_index: any, _data: IInvoiceVar) => {
+    setData((prev) => {
+      let prevArr = [...prev];
+      prevArr[_index].tong_tien = _data.tong_tien;
+      return prevArr;
+    });
+  };
   return (
     <Form form={form} component={false}>
       <Table
@@ -252,7 +257,7 @@ const InvoiceListTable = ({
         }}
         rowKey="_id"
         expandable={{
-          expandedRowRender: (record) => (
+          expandedRowRender: (record, _index) => (
             <StyledExpandableContainer>
               <div
                 className="exp-title"
@@ -260,7 +265,10 @@ const InvoiceListTable = ({
               >
                 Danh sách hàng hoá{" "}
               </div>
-              <InvoiceItemsTable originData={record.hang_hoa as IStock[]} />
+              <InvoiceItemsTable
+                updateData={(_data: any) => updateData(_index, _data)}
+                originData={record.hang_hoa as IStock[]}
+              />
               <div className="exp-item">
                 <div className="exp-item-title">Ngày mua:</div>
                 <p className="exp-item-content">

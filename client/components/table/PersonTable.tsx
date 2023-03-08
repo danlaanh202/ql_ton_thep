@@ -221,7 +221,7 @@ const PersonTable = ({ data, setData, total }: IData<IPerson[]>) => {
         pagination={{
           onChange: onChange,
           total: total,
-          current: router.query._page,
+          current: Number(router.query._page as string),
         }}
         rowKey="_id"
         expandable={{

@@ -45,8 +45,18 @@ const StyledFormInput = styled.div`
     &-item {
       padding: 12px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
       :hover {
         background: #f4f4f4;
+      }
+      &-1 {
+        flex: 1;
+      }
+      &-2 {
+        /* display: flex;
+        align-items: center; */
+        font-size: 12px;
       }
       &-name {
         font-size: 15px;
@@ -140,9 +150,16 @@ const FormInputNoControl = ({
                   setShowDropdown(false);
                 }}
               >
-                <div className="dropdown-item-name">{item.ten_hang_hoa}</div>
-                <div className="dropdown-item-amount">
-                  Số lượng: {item.so_luong_trong_kho}
+                <div className="dropdown-item-1">
+                  <div className="dropdown-item-name">{item.ten_hang_hoa}</div>
+                  <div className="dropdown-item-amount">
+                    Số lượng: {item.so_luong_trong_kho}
+                  </div>
+                </div>
+                <div className="dropdown-item-2">
+                  <div className="dropdown-item-price">
+                    Đơn giá: {item.gia_ban}
+                  </div>
                 </div>
               </div>
             ))}

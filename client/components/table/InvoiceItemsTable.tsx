@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, InputNumber, Popconfirm, Table, Typography } from "antd";
 import { IStock } from "@/types";
 import { easyReadMoney } from "@/utils/convert";
+import callApi from "@/utils/callApi";
 
 interface Item extends IStock {
   key: React.Key;
@@ -51,12 +52,18 @@ const EditableCell: React.FC<EditableCellProps> = ({
   );
 };
 
-const InvoiceItemsTable = ({ originData }: { originData: IStock[] }) => {
+const InvoiceItemsTable = ({
+  originData,
+  updateData,
+}: {
+  originData: IStock[];
+  updateData?: any;
+}) => {
   const [form] = Form.useForm();
   const [data, setData] = useState(originData);
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record: Item) => record._id === editingKey;
-  console.log(originData);
+  // console.log(originData);
   const edit = (record: Partial<Item> & { key: React.Key }) => {
     form.setFieldsValue({ name: "", age: "", address: "", ...record });
     setEditingKey(record._id as string);
@@ -77,14 +84,24 @@ const InvoiceItemsTable = ({ originData }: { originData: IStock[] }) => {
           ...item,
           ...row,
         });
-        setData(newData);
-        setEditingKey("");
+        // console.log(newData[index]);
+        await callApi
+          .editWareOfInvoice({
+            ...newData[index],
+            hang_hoa: originData[index].hang_hoa,
+          })
+          .then((res) => {
+            setEditingKey("");
+            setData(newData);
+            updateData(res.data);
+            console.log(res.data);
+          });
       } else {
         newData.push(row);
         setData(newData);
         setEditingKey("");
       }
-      console.log(newData[index]);
+      // console.log(newData[index]);
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
@@ -98,7 +115,7 @@ const InvoiceItemsTable = ({ originData }: { originData: IStock[] }) => {
       title: "Tên hàng hoá",
       dataIndex: ["hang_hoa", "ten_hang_hoa"],
       width: "300px",
-      editable: true,
+      editable: false,
     },
     {
       title: "Số lượng hàng hoá",

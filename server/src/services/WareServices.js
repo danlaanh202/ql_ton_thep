@@ -23,6 +23,7 @@ module.exports = new (class {
     return await newWare.save();
   }
   async changeWareAmount(_wares) {
+    // need _wares = [{ stock: {...}, amount }]
     const operations = _wares.map((item, index) => {
       return {
         updateOne: {

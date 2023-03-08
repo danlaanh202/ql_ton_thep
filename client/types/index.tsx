@@ -8,6 +8,7 @@ export interface ITimeStamps {
   updated_at: Date | string;
 }
 export interface IStock extends IId, ITimeStamps {
+  hang_hoa?: any;
   ten_mat_hang: string;
   don_gia: number;
   so_luong: number;

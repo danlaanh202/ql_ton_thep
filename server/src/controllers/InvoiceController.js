@@ -75,9 +75,8 @@ class InvoiceController {
   }
   async editWareListsOfInvoice(req, res) {
     try {
-      const result = await InvoicesServices.suaHangHoaTrongHoaDon();
-
-      return res.status(200).json(result);
+      const result = await InvoicesServices.suaHangHoaTrongHoaDon(req.body);
+      return res.status(200).json(result[2]);
     } catch (error) {
       return res.status(200).json(error);
     }
