@@ -11,4 +11,6 @@ router.get("/get", PersonController.getPeople);
 //[GET] get people with paginate params:{_page, _limit}
 router.get("/get_with_paginate", PersonController.getPeopleWithPagination);
 
+router.put("/pay_debt", PersonController.payDebt);
+
 module.exports = router;

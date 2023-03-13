@@ -36,4 +36,11 @@ module.exports = new (class {
       { new: true }
     );
   }
+  async payDebt(_id, _money) {
+    return await db.Person.findByIdAndUpdate(_id, {
+      $inc: {
+        so_tien_no: _money,
+      },
+    });
+  }
 })();

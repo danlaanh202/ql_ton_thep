@@ -144,6 +144,7 @@ const index = () => {
     } catch (error) {
       showMsg("Có lỗi khi tạo hoá đơn", "error");
       console.log(error);
+      setIsLoading(false);
     }
   };
 

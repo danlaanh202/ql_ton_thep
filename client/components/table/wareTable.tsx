@@ -103,7 +103,6 @@ const WareTable = ({
         await callApi
           .editWare(newData[index])
           .then((res) => {
-            console.log(res.data);
             showMsg("Sửa thành công", "success");
             setData(newData);
             setEditingKey("");

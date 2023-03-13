@@ -54,6 +54,14 @@ class InvoiceController {
       return res.status(500).json(error);
     }
   }
+  async getInvoiceById(req, res) {
+    try {
+      const invoice = await InvoicesServices.getInvoiceById(req.query._id);
+      return res.status(200).json(invoice);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  }
   async getInvoicesByName(req, res) {
     try {
       const invoices = await InvoicesServices.getByName(
@@ -76,6 +84,7 @@ class InvoiceController {
   async editWareListsOfInvoice(req, res) {
     try {
       const result = await InvoicesServices.suaHangHoaTrongHoaDon(req.body);
+      console.log(result[2]);
       return res.status(200).json(result[2]);
     } catch (error) {
       return res.status(200).json(error);

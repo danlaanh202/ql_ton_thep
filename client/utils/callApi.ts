@@ -84,6 +84,12 @@ export default new (class CallApi {
       },
     });
   }
+  async payDebt(_id: string, money: number | string) {
+    return await publicRequest.put("/person/pay_debt", {
+      _id,
+      money: Number(money),
+    });
+  }
   // ================================== Ware ===================================
   async createWare(_data: IWare) {
     return await publicRequest.post("/ware/create", _data);

@@ -120,13 +120,13 @@ const UpdateWareAmount = () => {
       });
     } catch (error) {
       setLoading(false);
-      showMsg("Vui lòng thử lại 1", "error");
+      showMsg("Vui lòng thử lại !!", "error");
     }
   };
-  useEffect(() => {
-    console.log(_helper.isDuplicateStock(_helper.removeUndefined(stocks)));
-    console.log(_helper.removeUndefined(stocks));
-  }, [stocks]);
+  // useEffect(() => {
+  //   console.log(_helper.isDuplicateStock(_helper.removeUndefined(stocks)));
+  //   console.log(_helper.removeUndefined(stocks));
+  // }, [stocks]);
   return (
     <>
       {contextHolder}

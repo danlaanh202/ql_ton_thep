@@ -41,17 +41,13 @@ module.exports = new (class {
   }
 
   async editWare(doc) {
-    return await db.Ware.findByIdAndUpdate(
-      doc._id,
-      {
-        ten_hang_hoa: doc.ten_hang_hoa,
-        gia_ban: Number(doc.gia_ban),
-        gia_nhap: Number(doc.gia_nhap),
-        so_luong_trong_kho: Number(doc.so_luong_trong_kho),
-        so_luong_da_ban: Number(doc.so_luong_da_ban),
-      },
-      { new: true }
-    );
+    return await db.Ware.findByIdAndUpdate(doc._id, {
+      ten_hang_hoa: doc.ten_hang_hoa,
+      gia_ban: Number(doc.gia_ban),
+      gia_nhap: Number(doc.gia_nhap),
+      so_luong_trong_kho: Number(doc.so_luong_trong_kho),
+      so_luong_da_ban: Number(doc.so_luong_da_ban),
+    });
   }
   async searchWare(_searchQuery, _page = 1, _limit = 10) {
     const options = {

@@ -1,4 +1,6 @@
+const VND = require("../../lib/currency");
 const PersonModel = require("../models/Person.model");
+const ActivityServices = require("../services/ActivityServices");
 const PeopleServices = require("../services/PeopleServices");
 
 class PersonController {
@@ -43,6 +45,27 @@ class PersonController {
         req.query._limit || 10
       );
       return res.status(200).json(docs);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  }
+  async payDebt(req, res) {
+    try {
+      const person = await PeopleServices.payDebt(
+        req.body._id,
+        -Number(req.body.money)
+      );
+      await ActivityServices.addActivity(
+        "_debt",
+        `${person.ten_khach_hang} vừa trả số tiền ${VND(
+          Number(req.body.money)
+        )}<br>ID người trả: ${person._id}<br>Số tiền nợ cũ: ${
+          person.so_tien_no
+        }<br>Còn lại: ${Number(person.so_tien_no) - Number(req.body.money)}`
+      );
+      return res
+        .status(200)
+        .json({ message: `Trả thành công ${VND(Number(req.body.money))}` });
     } catch (error) {
       return res.status(500).json(error);
     }

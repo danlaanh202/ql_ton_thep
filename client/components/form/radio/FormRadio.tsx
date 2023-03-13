@@ -40,6 +40,7 @@ const FormRadio = ({
       <div className="radio-container">
         {options.map((item, index) => (
           <RadioItem
+            key={item.value}
             _id={item.id}
             _value={item.value}
             _name="loai_hang"

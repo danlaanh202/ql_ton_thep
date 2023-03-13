@@ -46,7 +46,16 @@ module.exports = new (class {
       ])
       .sort({ created_at: -1 });
   }
-
+  async getInvoiceById(_id) {
+    return await db.Invoice.findById(_id).populate([
+      {
+        path: "khach_hang",
+      },
+      {
+        path: "hang_hoa.hang_hoa",
+      },
+    ]);
+  }
   async getByName(_searchQuery, _page = 1, _limit = 10) {
     const options = {
       limit: _limit,
@@ -95,7 +104,7 @@ module.exports = new (class {
       {
         ghi_chu:
           prevInvoice.ghi_chu +
-          `<br>-Số tiền trả thay đổi từ ${prevInvoice.so_tien_tra} sang ${data.so_tien_tra}`,
+          `<br>- Số tiền trả thay đổi từ ${prevInvoice.so_tien_tra} sang ${data.so_tien_tra}`,
       },
       { new: true }
     );
@@ -113,13 +122,12 @@ module.exports = new (class {
         "hang_hoa.$.so_luong": Number(_data.so_luong),
         "hang_hoa.$.don_gia": Number(_data.don_gia),
       }
-    );
-    // console.log(oldData);
+    ).populate("hang_hoa.hang_hoa");
+    console.log(oldData);
     let oldHangHoa = oldData.hang_hoa.find(
       (e) => e._id.toString() === _data._id
     );
 
-    // console.log(oldHangHoa);
     const p1 = WareServices.changeWareAmount([
       {
         stock: _data.hang_hoa,
@@ -139,9 +147,15 @@ module.exports = new (class {
             Number(_data.so_luong) * Number(_data.don_gia) -
             Number(oldHangHoa.so_luong) * Number(oldHangHoa.don_gia),
         },
+        ghi_chu:
+          oldData.ghi_chu +
+          `<br>- Sửa hàng hoá: "${oldHangHoa.hang_hoa.ten_hang_hoa}" từ 
+          {số lượng: ${oldHangHoa.so_luong}, đơn giá: ${oldHangHoa.don_gia}}
+           sang {số lượng: ${_data.so_luong}, đơn giá: ${_data.don_gia}}`,
       },
       { new: true }
     );
+
     return await Promise.all([p1, p2, p3]);
   }
 })();
