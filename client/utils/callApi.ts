@@ -125,4 +125,19 @@ export default new (class CallApi {
   async getActivities() {
     return await publicRequest.get("/activity/get_activities");
   }
+  async getActivitiesWithFilter(
+    _page: number = 1,
+    _limit: number = 10,
+    _type: string = "",
+    _search_query: string = ""
+  ) {
+    return await publicRequest.get("/activity/get_activities_with_filter", {
+      params: {
+        _page,
+        _limit,
+        _type,
+        search_query: _search_query,
+      },
+    });
+  }
 })();

@@ -3,6 +3,7 @@ import useDebounce from "@/hooks/useDebounce";
 import MainLayout from "@/layout/MainLayout";
 import { IInvoiceVar, IPerson } from "@/types";
 import callApi from "@/utils/callApi";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -35,7 +36,7 @@ const StyledSearchContainer = styled.div`
   .table-container {
   }
 `;
-const index = () => {
+const InvoiceSearch = () => {
   const [personName, setPersonName] = useState("");
   const personNameDebounce = useDebounce(personName, 500);
   const [data, setData] = useState<IInvoiceVar[]>([]);
@@ -61,7 +62,9 @@ const index = () => {
   }, [personNameDebounce, router.query._page]);
   return (
     <MainLayout>
-      <title>Tìm kiếm hoá đơn</title>
+      <Head>
+        <title>Tìm kiếm hoá đơn</title>
+      </Head>
       <StyledSearchContainer>
         <div className="input-container">
           <input
@@ -86,4 +89,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default InvoiceSearch;

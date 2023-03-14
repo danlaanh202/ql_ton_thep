@@ -6,7 +6,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-const InvoiceList = () => {
+const PersonList = () => {
   const router = useRouter();
   const [data, setData] = useState<IPerson[]>([]);
   const [totalDocs, setTotalDocs] = useState(0);
@@ -29,4 +29,4 @@ const InvoiceList = () => {
   );
 };
 
-export default InvoiceList;
+export default PersonList;

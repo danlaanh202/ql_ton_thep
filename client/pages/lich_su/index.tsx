@@ -2,7 +2,7 @@ import ActivityCardContainer from "@/components/activity/ActivityCardContainer";
 import MainLayout from "@/layout/MainLayout";
 import Head from "next/head";
 
-const index = () => {
+const HistoryList = () => {
   return (
     <MainLayout>
       <Head>
@@ -13,4 +13,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default HistoryList;

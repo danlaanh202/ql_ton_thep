@@ -5,6 +5,7 @@ module.exports = new (class {
     const options = {
       offset: _limit * (parseInt(_page) - 1),
       limit: 10,
+      sort: { updated_at: -1 },
     };
     return await db.Person.paginate({}, options);
   }
@@ -12,7 +13,7 @@ module.exports = new (class {
     const options = {
       offset: _limit * (parseInt(_page) - 1) || 0,
       limit: _limit,
-      // sort: ,
+      sort: { updated_at: -1 },
     };
     return await db.Person.paginate(
       {

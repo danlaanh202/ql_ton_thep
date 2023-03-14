@@ -82,7 +82,7 @@ const InputWithSearch = ({
   _index: number;
   func: any;
 }) => {
-  const ref = useRef();
+  const ref = useRef(null);
   useOnClickOutside(ref, () => setShowDropdown(false));
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownItem, setDropdownItem] = useState<IWare[]>([]);

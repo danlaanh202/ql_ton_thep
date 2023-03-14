@@ -83,7 +83,7 @@ const FormInputNoControl = ({
   _type?: "name" | "amount" | "price";
   _index: number;
 }) => {
-  const ref = useRef();
+  const ref = useRef(null);
   useOnClickOutside(ref, () => {
     setShowDropdown(false);
   });

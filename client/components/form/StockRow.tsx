@@ -83,7 +83,8 @@ const StockRow = ({
   };
   useEffect(() => {
     setThanhTien(
-      (stocks[index]?.so_luong || 0) * (stocks[index]?.don_gia || 0)
+      ((stocks[index] as IStocksState)?.so_luong || 0) *
+        ((stocks[index] as IStocksState)?.don_gia || 0)
     );
     // console.log(stocks[index]);
   }, [stocks[index]]);

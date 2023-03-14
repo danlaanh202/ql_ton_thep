@@ -75,7 +75,7 @@ const PersonTable = ({ data, setData, total }: IData<IPerson[]>) => {
 
   const isEditing = (record: Item) => record._id === editingKey;
 
-  const edit = (record: Partial<Item> & { key: React.Key }) => {
+  const edit = (record: Partial<Item> & { _id: React.Key }) => {
     form.setFieldsValue({ name: "", age: "", dia_chi: "", ...record });
     setEditingKey(record._id as string);
   };

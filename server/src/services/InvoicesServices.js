@@ -86,7 +86,7 @@ module.exports = new (class {
       offset: _limit * (parseInt(_page) - 1),
       limit: _limit,
       populate: ["khach_hang", "hang_hoa.hang_hoa"],
-      sort: { _id: -1 },
+      sort: { created_at: -1 },
     };
     return await db.Invoice.paginate({}, options);
   }

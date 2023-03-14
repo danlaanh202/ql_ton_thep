@@ -133,7 +133,7 @@ const FormInput = ({
     name: inputId,
     defaultValue: "",
   });
-  const ref = useRef();
+  const ref = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
   useOnClickOutside(ref, () => setShowDropdown(false));
   return (

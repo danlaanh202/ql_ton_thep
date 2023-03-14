@@ -1,4 +1,4 @@
-import WareTable from "@/components/table/wareTable";
+import WareTable from "@/components/table/WareTable";
 import useDebounce from "@/hooks/useDebounce";
 import MainLayout from "@/layout/MainLayout";
 import { IWare } from "@/types";
@@ -37,7 +37,7 @@ const StyledContainer = styled.div`
   .table-container {
   }
 `;
-const index = () => {
+const WareList = () => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const searchQueryDebounce = useDebounce(searchQuery, 500);
@@ -86,4 +86,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default WareList;

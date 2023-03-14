@@ -24,7 +24,7 @@ module.exports = new (class {
   }
   async changeWareAmount(_wares) {
     // need _wares = [{ stock: {...}, amount }]
-    console.log("abc");
+
     const operations = _wares.map((item, index) => {
       return {
         updateOne: {
@@ -56,7 +56,6 @@ module.exports = new (class {
       offset: (Number(_page) - 1) * _limit || 0,
       sort: {
         ten_hang_hoa: 1,
-        //  updated_at: -1
       },
     };
     return await db.Ware.paginate(

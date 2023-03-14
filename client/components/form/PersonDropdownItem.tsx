@@ -48,7 +48,7 @@ const PersonDropdownItem = ({
         <div className="person-debt-title">
           Nợ:{" "}
           <span className="person-debt-money">
-            {easyReadMoney(data.so_tien_no)}
+            {easyReadMoney(Number(data.so_tien_no))}
           </span>
         </div>
       </div>

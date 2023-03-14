@@ -77,7 +77,7 @@ const WareTable = ({
   const isEditing = (record: IWare) => record._id === editingKey;
   const [showMsg, contextHolder] = useNotifications();
 
-  const edit = (record: Partial<IWare> & { key: React.Key }) => {
+  const edit = (record: Partial<IWare> & { _id: React.Key }) => {
     form.setFieldsValue({ name: "", age: "", address: "", ...record });
     setEditingKey(record._id as string);
     console.log(data);

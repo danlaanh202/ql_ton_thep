@@ -66,7 +66,6 @@ const DebtContainer = () => {
     });
   };
   useEffect(() => {
-    console.log(data);
     callApi.getPeopleWithSearchQuery(pNameDebounce, 1).then((res) => {
       // console.log(res.data);
       setLoading(false);
@@ -94,6 +93,7 @@ const DebtContainer = () => {
             data.map((item, index) => {
               return (
                 <DebtCard
+                  key={item._id}
                   handleOpenModal={() => {
                     openM(index);
                   }}

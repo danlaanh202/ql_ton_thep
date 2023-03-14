@@ -6,7 +6,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 type Type1 = "old" | "new" | "unset";
-const index = () => {
+const NhapHangHoa = () => {
   const router = useRouter();
   const [type1, setType1] = useState<Type1>("unset");
   useEffect(() => {
@@ -15,7 +15,7 @@ const index = () => {
   return (
     <MainLayout>
       <Head>
-        <title>Danh sách hàng hoá</title>
+        <title>Nhập hàng hoá</title>
       </Head>
       {type1 === "unset" && <ChoosenType />}
       {type1 === "old" && <UpdateWareAmount />}
@@ -24,4 +24,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default NhapHangHoa;

@@ -78,7 +78,7 @@ export interface IStocksState {
   so_luong: number;
 }
 
-const index = () => {
+const NhapHoaDon = () => {
   const {
     handleSubmit,
     control,
@@ -274,4 +274,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default NhapHoaDon;

@@ -1,7 +1,7 @@
 import { notification } from "antd";
-import { useState } from "react";
+
 type NotificationType = "success" | "info" | "warning" | "error";
-export default function useNotifications() {
+export default function useNotifications(): any[] {
   const [api, contextHolder] = notification.useNotification();
   const showMsg = (_msg: string, type: NotificationType) => {
     api[type]({

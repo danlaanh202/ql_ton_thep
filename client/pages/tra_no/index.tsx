@@ -2,7 +2,7 @@ import DebtContainer from "@/components/debt/DebtContainer";
 import MainLayout from "@/layout/MainLayout";
 import Head from "next/head";
 
-const index = () => {
+const PayDebt = () => {
   return (
     <MainLayout>
       <Head>
@@ -13,4 +13,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default PayDebt;
