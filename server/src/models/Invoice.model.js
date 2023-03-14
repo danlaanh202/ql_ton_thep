@@ -37,14 +37,14 @@ const InvoiceSchema = new mongoose.Schema(
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
   }
 );
-InvoiceSchema.post("save", function (next) {
-  this.tong_tien = this.hang_hoa.reduce(
-    (prev, curr) => {
-      return prev + curr.so_luong * curr.don_gia;
-    },
-    [0]
-  );
-  next();
-});
+// InvoiceSchema.post("save", function (next) {
+//   this.tong_tien = this.hang_hoa.reduce(
+//     (prev, curr) => {
+//       return prev + curr.so_luong * curr.don_gia;
+//     },
+//     [0]
+//   );
+//   next();
+// });
 InvoiceSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model("Invoice", InvoiceSchema);

@@ -7,7 +7,9 @@ module.exports = new (class {
       const doc = await WareServices.createWare(req.body);
       await ActivityServices.addActivity(
         "_import",
-        `Nhập hàng hoá mới:<br> Tên hàng hoá: ${req.body.ten_hang_hoa} - Số lượng: ${req.body.so_luong}<br>Giá bán: ${req.body.gia_ban} - Giá nhập: ${req.body.gia_nhap}`
+        `Nhập hàng hoá mới:<br>
+        Tên hàng hoá: ${req.body.ten_hang_hoa} - Số lượng: ${req.body.so_luong}
+        <br>Giá bán: ${req.body.gia_ban} - Giá nhập: ${req.body.gia_nhap}.<br>`
       );
       return res.status(200).json(doc);
     } catch (error) {

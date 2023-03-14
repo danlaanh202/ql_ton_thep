@@ -94,7 +94,6 @@ const InvoiceItemsTable = ({
             setEditingKey("");
             setData(newData);
             updateData(res.data);
-            console.log(res.data);
           });
       } else {
         newData.push(row);

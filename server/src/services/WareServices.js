@@ -24,6 +24,7 @@ module.exports = new (class {
   }
   async changeWareAmount(_wares) {
     // need _wares = [{ stock: {...}, amount }]
+    console.log("abc");
     const operations = _wares.map((item, index) => {
       return {
         updateOne: {

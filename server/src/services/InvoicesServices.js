@@ -6,19 +6,22 @@ const PeopleServices = require("./PeopleServices");
 
 module.exports = new (class {
   async createInvoiceFunc(data, newInvoice) {
-    updatePersonMoneyById(data.khach_hang_id, {
+    await updatePersonMoneyById(data.khach_hang_id, {
       so_tien_no_them: data.tong_tien - data.so_tien_tra,
       tong_hoa_don: data.tong_tien,
     });
-    WareServices.changeWareAmount(
+    await WareServices.changeWareAmount(
       data.hang_hoa.map((item) => {
         return {
           stock: item.hang_hoa,
-          amount: -parseInt(item.so_luong),
+          amount: -Number(item.so_luong),
         };
       })
     );
-    return await newInvoice.save();
+
+    const doc = await newInvoice.save();
+
+    return doc;
   }
   async getAllInvoices() {
     return await db.Invoice.find({})

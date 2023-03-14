@@ -5,7 +5,7 @@ const ActivitySchema = new mongoose.Schema(
   {
     _type: {
       type: String,
-      // "_export" | "_edit" | "_delete" | "_import" | "_debt",
+      //  "_edit" | "_delete" | "_import" | "_debt", "_create"
     },
     _content: {
       type: String,

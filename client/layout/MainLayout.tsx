@@ -1,16 +1,17 @@
+import Link from "next/link";
+import styled from "styled-components";
+import { ReactNode, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import {
   FileAddOutlined,
   FileSearchOutlined,
+  HistoryOutlined,
   HomeOutlined,
   ImportOutlined,
   MoneyCollectOutlined,
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { ReactNode, useEffect, useState } from "react";
-import styled from "styled-components";
 
 const StyledMainLayout = styled.div`
   height: 100vh;
@@ -25,7 +26,6 @@ const StyledAsideContainer = styled.aside`
   position: sticky;
   top: 0;
   left: 0;
-
   .list-container {
     display: flex;
     height: 100%;
@@ -180,6 +180,12 @@ const sidebarList = [
     href: "/danh_sach_hang_hoa?_page=1",
     icon: <UnorderedListOutlined />,
     checkRoute: "danh_sach_hang_hoa",
+  },
+  {
+    title: "Lịch sử",
+    href: "/lich_su",
+    icon: <HistoryOutlined />,
+    checkRoute: "lich_su",
   },
 ];
 export default MainLayout;

@@ -10,7 +10,6 @@ const InvoicesChildListTable = ({ id }: { id: string }) => {
     if (id) {
       callApi.getInvoicesById(id).then((res) => {
         setData(res.data);
-        console.log(res.data);
       });
     }
   }, [id]);

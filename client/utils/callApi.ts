@@ -120,4 +120,9 @@ export default new (class CallApi {
       },
     });
   }
+
+  // ============================= Activity ========================
+  async getActivities() {
+    return await publicRequest.get("/activity/get_activities");
+  }
 })();

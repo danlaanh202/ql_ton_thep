@@ -100,7 +100,6 @@ const index = () => {
   const [showMsg, contextHolder] = useNotifications();
 
   const onSubmitHandler = async (data: any) => {
-    setIsLoading(true);
     let filterStocks = _helper.removeUndefinedFromInvoices(stocks);
     if (
       !isValid ||
@@ -112,6 +111,7 @@ const index = () => {
       setIsLoading(false);
       return;
     }
+    setIsLoading(true);
 
     try {
       if (selectedPerson?.ten_khach_hang !== searchQuery) {

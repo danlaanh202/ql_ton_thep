@@ -41,3 +41,8 @@ export interface IWare extends IId, ITimeStamps {
   so_luong_da_ban: number;
   so_luong_trong_kho: number;
 }
+
+export interface IActivity extends IId, ITimeStamps {
+  _type: "_edit" | "_delete" | "_import" | "_debt" | "_create";
+  _content: string;
+}
