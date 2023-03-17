@@ -139,7 +139,7 @@ const ActivityCardContainer = () => {
         endDate
       )
       .then((res) => {
-        console.log(res.data.docs);
+        // console.log(res.data.docs);
         setData(res.data.docs);
         setLoading(false);
         setTotalDocs(totalDocs);

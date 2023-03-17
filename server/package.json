@@ -6,8 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "cd ../client && npm run dev",
+    "clientproduct": "cd ../client && npm start",
     "start": "nodemon index.js",
-    "dev": "concurrently \"npm start\" \"npm run client\""
+    "dev": "concurrently \"npm start\" \"npm run client\"",
+    "production": "concurrently \"npm start\" \"npm run clientproduct\""
   },
   "keywords": [],
   "author": "",

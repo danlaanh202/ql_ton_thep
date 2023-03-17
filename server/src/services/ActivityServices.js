@@ -25,7 +25,7 @@ module.exports = new (class {
     _start,
     _end
   ) {
-    console.log(`search: ${VietnameseSearchText(search_query)}`);
+    // console.log(`search: ${VietnameseSearchText(search_query)}`);
     const options = {
       limit: Number(_limit),
       offset: (Number(_page) - 1) * Number(_limit) || 0,

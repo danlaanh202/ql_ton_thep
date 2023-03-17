@@ -59,6 +59,7 @@ module.exports = new (class {
         ten_hang_hoa: 1,
       },
     };
+    // console.log(VietnameseSearchText(_searchQuery));
     return await db.Ware.paginate(
       {
         ten_hang_hoa: {
