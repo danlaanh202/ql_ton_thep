@@ -1,4 +1,5 @@
 const checkUndefinedObject = require("../../lib/checkUndefinedObject");
+const VietnameseSearchText = require("../../lib/VietnameseSearchText");
 const { updatePersonMoneyById } = require("../../lib/personHandle");
 const db = require("../models");
 const WareServices = require("./WareServices");
@@ -68,7 +69,7 @@ module.exports = new (class {
     };
     const findedPeople = await db.Person.find({
       ten_khach_hang: {
-        $regex: _searchQuery,
+        $regex: VietnameseSearchText(_searchQuery),
         $options: "i",
       },
     }).limit(10);

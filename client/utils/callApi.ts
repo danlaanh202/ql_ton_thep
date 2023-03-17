@@ -129,7 +129,9 @@ export default new (class CallApi {
     _page: number = 1,
     _limit: number = 10,
     _type: string = "",
-    _search_query: string = ""
+    _search_query: string = "",
+    startDate: Date,
+    endDate: Date
   ) {
     return await publicRequest.get("/activity/get_activities_with_filter", {
       params: {
@@ -137,6 +139,8 @@ export default new (class CallApi {
         _limit,
         _type,
         search_query: _search_query,
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
       },
     });
   }

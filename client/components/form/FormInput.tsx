@@ -175,16 +175,7 @@ const FormInput = ({
           </div>
         </div>
       )}
-      {/* {disabled && (
-        <input
-          className="form-input"
-          type="text"
-          id={inputId}
-          placeholder={placeholder}
-          value={disabledVal}
-          disabled={disabled}
-        />
-      )} */}
+
       {withSearch && (
         <div ref={ref} className="input-dropdown-container">
           <input

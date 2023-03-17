@@ -19,5 +19,6 @@ const ActivitySchema = new mongoose.Schema(
     },
   }
 );
+ActivitySchema.index({ _content: "text" });
 ActivitySchema.plugin(mongoosePaginate);
 module.exports = mongoose.model("Activity", ActivitySchema);

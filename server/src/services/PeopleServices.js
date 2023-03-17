@@ -1,5 +1,5 @@
 const db = require("../models");
-
+const VietnameseSearchText = require("../../lib/VietnameseSearchText");
 module.exports = new (class {
   async getPeopleWithPaginate(_page, _limit) {
     const options = {
@@ -18,7 +18,7 @@ module.exports = new (class {
     return await db.Person.paginate(
       {
         ten_khach_hang: {
-          $regex: _searchQuery,
+          $regex: VietnameseSearchText(_searchQuery),
           $options: "i",
         },
       },

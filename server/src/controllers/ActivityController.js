@@ -15,7 +15,9 @@ module.exports = new (class {
         req.query._page,
         req.query._limit,
         req.query._type,
-        req.query.search_query
+        req.query.search_query,
+        req.query.start,
+        req.query.end
       );
       return res.status(200).json(docs);
     } catch (error) {

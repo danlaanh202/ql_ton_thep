@@ -1,5 +1,5 @@
 const db = require("../models");
-
+const VietnameseSearchText = require("../../lib/VietnameseSearchText");
 module.exports = new (class {
   async addActivity(_type, _content) {
     const activity = new db.Activity({
@@ -21,8 +21,11 @@ module.exports = new (class {
     _page = 1,
     _limit = 10,
     _type = "",
-    search_query = ""
+    search_query = "",
+    _start,
+    _end
   ) {
+    console.log(`search: ${VietnameseSearchText(search_query)}`);
     const options = {
       limit: Number(_limit),
       offset: (Number(_page) - 1) * Number(_limit) || 0,
@@ -32,15 +35,23 @@ module.exports = new (class {
       _type === ""
         ? {
             _content: {
-              $regex: search_query,
+              $regex: VietnameseSearchText(search_query),
               $options: "i",
+            },
+            created_at: {
+              $gte: new Date(_start),
+              $lt: new Date(_end),
             },
           }
         : {
-            _type: _type,
             _content: {
-              $regex: search_query,
+              $regex: VietnameseSearchText(search_query),
               $options: "i",
+            },
+            _type: _type,
+            created_at: {
+              $gte: new Date(_start),
+              $lt: new Date(_end),
             },
           },
       options

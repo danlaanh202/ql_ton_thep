@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const checkUndefinedObject = require("../../lib/checkUndefinedObject");
 const db = require("../models");
+const VietnameseSearchText = require("../../lib/VietnameseSearchText");
 
 module.exports = new (class {
   async getWithPagination(_page, _limit) {
@@ -61,7 +62,7 @@ module.exports = new (class {
     return await db.Ware.paginate(
       {
         ten_hang_hoa: {
-          $regex: _searchQuery,
+          $regex: VietnameseSearchText(_searchQuery),
           $options: "i",
         },
       },

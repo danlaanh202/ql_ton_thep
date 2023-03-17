@@ -1,11 +1,26 @@
 import useDebounce from "@/hooks/useDebounce";
 import { IActivity } from "@/types";
 import callApi from "@/utils/callApi";
+import { Pagination, PaginationProps } from "antd";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
+import ReactDatePicker from "react-datepicker";
 import styled from "styled-components";
 import CustomSelect from "../form/CustomSelect";
 const StyledContainer = styled.div`
+  .pagination-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    .ant-pagination-item {
+      display: inline-block !important;
+      a {
+        display: inline-block !important;
+      }
+    }
+  }
   .filter-container {
     width: 100%;
     max-width: 600px;
@@ -46,6 +61,21 @@ const StyledContainer = styled.div`
       }
       &-item {
         width: 120px;
+      }
+    }
+    .date-container {
+      display: flex;
+      gap: 24px;
+      justify-content: flex-end;
+      .react-datepicker-wrapper {
+        width: auto;
+        input {
+          padding: 4px;
+        }
+      }
+      label {
+        font-weight: 500;
+        margin-right: 8px;
       }
     }
   }
@@ -90,18 +120,32 @@ const ActivityCardContainer = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchQueryDebounce = useDebounce(searchQuery, 200);
+  const [currentPage, setCurrentPage] = useState(1);
   const [listIndex, setListIndex] = useState(0);
-
+  const [totalDocs, setTotalDocs] = useState(0);
+  const [startDate, setStartDate] = useState(new Date("04-14-1990"));
+  const [endDate, setEndDate] = useState(new Date());
+  const onChange: PaginationProps["onChange"] = (page: number) => {
+    setCurrentPage(page);
+  };
   useEffect(() => {
     callApi
-      .getActivitiesWithFilter(1, 10, typeList[listIndex], searchQueryDebounce)
+      .getActivitiesWithFilter(
+        currentPage,
+        10,
+        typeList[listIndex],
+        searchQueryDebounce,
+        startDate,
+        endDate
+      )
       .then((res) => {
+        console.log(res.data.docs);
         setData(res.data.docs);
         setLoading(false);
-        console.log(res.data);
+        setTotalDocs(totalDocs);
       })
       .catch((err) => setLoading(false));
-  }, [listIndex, searchQueryDebounce]);
+  }, [listIndex, searchQueryDebounce, currentPage, startDate, endDate]);
 
   return (
     <StyledContainer>
@@ -114,6 +158,7 @@ const ActivityCardContainer = () => {
             onChange={(e) => {
               setLoading(true);
               setSearchQuery(e.target.value);
+              setCurrentPage(1);
             }}
           />
           {loading && <div className="spinner"></div>}
@@ -129,6 +174,32 @@ const ActivityCardContainer = () => {
             />
           </div>
         </div>
+        <div className="date-container">
+          <div className="start">
+            <label>Từ ngày:</label>
+            <ReactDatePicker
+              wrapperClassName="date-picker"
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Ngày/Tháng/Năm"
+              selected={startDate}
+              onChange={(date: Date) => {
+                setStartDate(date);
+              }}
+            />
+          </div>
+          <div className="end">
+            <label>Đến ngày:</label>
+            <ReactDatePicker
+              wrapperClassName="date-picker"
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Ngày/Tháng/Năm"
+              selected={endDate}
+              onChange={(date: Date) => {
+                setEndDate(date);
+              }}
+            />
+          </div>
+        </div>
       </div>
       <StyledCardContainer>
         {data?.length > 0 &&
@@ -136,6 +207,14 @@ const ActivityCardContainer = () => {
             return <ActivityCard key={item._id} data={item} />;
           })}
       </StyledCardContainer>
+
+      <div className="pagination-container">
+        <Pagination
+          current={currentPage}
+          total={totalDocs}
+          onChange={onChange}
+        />
+      </div>
     </StyledContainer>
   );
 };
