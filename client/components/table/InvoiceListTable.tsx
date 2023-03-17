@@ -77,6 +77,7 @@ const InvoiceListTable = ({
   isChild?: boolean;
   total?: number;
 }) => {
+  console.log(data);
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record: Item) => record._id === editingKey;
@@ -141,6 +142,17 @@ const InvoiceListTable = ({
           dataIndex: ["khach_hang", "so_dien_thoai"],
           width: "300px",
           // editable: true,
+        },
+    isChild
+      ? {}
+      : {
+          title: "Ngày mua",
+          dataIndex: "ngay_mua",
+          width: "300px",
+          // editable: true,
+          render: (_: any, record: Item) => {
+            return format(new Date(record.ngay_mua as string), "dd/MM/yyyy");
+          },
         },
     isChild
       ? {}

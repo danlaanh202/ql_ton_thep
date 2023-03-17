@@ -1,0 +1,6 @@
+title Ung dung xuat nhap hoa don
+start http://localhost:3000
+D:\
+cd D:\coding\XuatNhapHD\server
+npm run production
+pause

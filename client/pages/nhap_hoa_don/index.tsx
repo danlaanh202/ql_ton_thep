@@ -232,7 +232,8 @@ const NhapHoaDon = () => {
           </div>
 
           <div className="row-container total">
-            Tổng tiền hoá đơn: {easyReadMoney(totalPrice)}
+            Tổng tiền hoá đơn: {easyReadMoney(totalPrice)} -{" "}
+            {_helper.docTien.doc(totalPrice)}
           </div>
           <div className="row-container">
             <FormInput

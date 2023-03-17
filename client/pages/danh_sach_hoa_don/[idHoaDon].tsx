@@ -109,7 +109,7 @@ const StyledHoaDon = styled.div`
     }
   }
   .total-money {
-    margin: 8px 0;
+    margin: 12px 0;
     display: flex;
     gap: 4px;
     span {
@@ -182,12 +182,6 @@ const HoaDon = ({ data }: { data?: IInvoiceVar }) => {
           <label htmlFor="">Địa chỉ:</label>
           <span>{data?.khach_hang.dia_chi}</span>
         </div>
-        {/* <div className="information-item">
-          <label htmlFor="">Ngày mua:</label>
-          <span>
-            {format(new Date(data?.ngay_mua as string), "dd/MM/yyyy")}
-          </span>
-        </div> */}
       </div>
       <div className="stock-table-container tb">
         <table className="stock-table">
@@ -214,7 +208,7 @@ const HoaDon = ({ data }: { data?: IInvoiceVar }) => {
               })}
             {(data?.hang_hoa?.length as number) < 17 &&
               (data?.hang_hoa?.length as number) > 0 &&
-              Array(17 - (data?.hang_hoa?.length as number))
+              Array(20 - (data?.hang_hoa?.length as number))
                 .fill(0)
                 .map((item, index) => {
                   return (
