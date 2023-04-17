@@ -1,4 +1,5 @@
-import WareTable from "@/components/table/WareTable";
+
+import WareTable from "../../components/table/WareTable";
 import useDebounce from "@/hooks/useDebounce";
 import MainLayout from "@/layout/MainLayout";
 import { IWare } from "@/types";

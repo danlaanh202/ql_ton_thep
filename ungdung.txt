@@ -1,6 +1,5 @@
 title Ung dung xuat nhap hoa don
 start http://localhost:3000
-D:\
-cd D:\coding\XuatNhapHD\server
+cd %cd%\server\server
 npm run production
 pause
