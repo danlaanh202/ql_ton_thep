@@ -15,6 +15,10 @@ module.exports = new (class {
   async createWare(_data) {
     const newWare = new db.Ware({
       ten_hang_hoa: _data.ten_hang_hoa,
+      ten_hang_hoa_search: _data.ten_hang_hoa
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""),
       gia_ban: _data.gia_ban,
       gia_nhap: _data.gia_nhap,
       so_luong_trong_kho: _data.so_luong,
@@ -51,7 +55,7 @@ module.exports = new (class {
       so_luong_da_ban: Number(doc.so_luong_da_ban),
     });
   }
-  async searchWare(_searchQuery, _page = 1, _limit = 10) {
+  async searchWare(_searchQuery, _page = 1, _limit = 20) {
     const options = {
       limit: _limit,
       offset: (Number(_page) - 1) * _limit || 0,
@@ -62,12 +66,23 @@ module.exports = new (class {
     // console.log(VietnameseSearchText(_searchQuery));
     return await db.Ware.paginate(
       {
-        ten_hang_hoa: {
-          $regex: VietnameseSearchText(_searchQuery),
+        // $text: {
+        //   $search: _searchQuery
+        //     .toLowerCase()
+        //     .normalize("NFD")
+        //     .replace(/[\u0300-\u036f]/g, ""),
+        // },
+        ten_hang_hoa_search: {
+          // $regex: VietnameseSearchText(_searchQuery),
+          $regex: _searchQuery
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, ""),
           $options: "i",
         },
       },
       options
+      // { score: { $meta: "textScore" } }
     );
   }
   async deleteWare(_id) {

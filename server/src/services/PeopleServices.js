@@ -9,7 +9,7 @@ module.exports = new (class {
     };
     return await db.Person.paginate({}, options);
   }
-  async getPeopleWithSearchQuery(_searchQuery, _page = 1, _limit = 10) {
+  async getPeopleWithSearchQuery(_searchQuery, _page = 1, _limit = 20) {
     const options = {
       offset: _limit * (parseInt(_page) - 1) || 0,
       limit: _limit,
@@ -17,8 +17,11 @@ module.exports = new (class {
     };
     return await db.Person.paginate(
       {
-        ten_khach_hang: {
-          $regex: VietnameseSearchText(_searchQuery),
+        ten_khach_hang_search: {
+          $regex: _searchQuery
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, ""),
           $options: "i",
         },
       },

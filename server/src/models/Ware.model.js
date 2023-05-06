@@ -6,6 +6,9 @@ const WareSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    ten_hang_hoa_search: {
+      type: String,
+    },
     gia_ban: {
       type: Number,
       required: true,

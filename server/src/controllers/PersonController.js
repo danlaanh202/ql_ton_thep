@@ -7,6 +7,10 @@ class PersonController {
   async createPerson(req, res) {
     const newPerson = new PersonModel({
       ten_khach_hang: req.body.ten_khach_hang,
+      ten_khach_hang_search: req.body.ten_khach_hang
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""),
       so_dien_thoai: req.body.so_dien_thoai,
       dia_chi: req.body.dia_chi,
       so_tien_no: 0,

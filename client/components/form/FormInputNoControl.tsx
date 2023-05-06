@@ -42,6 +42,7 @@ const StyledFormInput = styled.div`
     max-height: 320px;
     z-index: 10;
     border: 1px solid #dbdbdb;
+    overflow: auto;
     &-item {
       padding: 12px;
       cursor: pointer;
@@ -97,7 +98,7 @@ const FormInputNoControl = ({
 
   useEffect(() => {
     if (withDropdown) {
-      callApi.searchWare(searchQueryDebounce, 1, 5).then((res) => {
+      callApi.searchWare(searchQueryDebounce, 1, 20).then((res) => {
         setDropdownItem(res.data.docs);
       });
     }

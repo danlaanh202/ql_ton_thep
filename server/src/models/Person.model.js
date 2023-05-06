@@ -6,6 +6,9 @@ const PersonSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    ten_khach_hang_search: {
+      type: String,
+    },
     so_dien_thoai: {
       type: String,
     },
